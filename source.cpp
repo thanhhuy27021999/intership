@@ -4,15 +4,24 @@ using namespace std;
 
 int main()
 {   
-    Data data_node1;
-    List lst;
-    data_node1.a= 100;
-    Node *node1= CreatNode(data_node1);
-    cout <<"gia tri cua node1 la: " << node1->data.a << "\n";
-    cout <<"gia tri cua pnext la: "<<node1->pnext <<"\n";
-    init(lst);
-    if (Isempty(lst))
-    cout << " Danh sach la rong " <<"\n";
-    else cout << "Danh sach la khong rong " <<"\n";
-
+    Data value,value_20;
+    value_20.a= 20;
+    List list1;
+    init(list1);
+    Node* node;
+    for (int i=0; i<10; i++)
+    {
+        value.a = i;
+        node = CreatNode(value);
+        AddTail(list1,node);
+    }
+    PrinfList(list1);
+    cout <<"\n";
+    node = Getnode(list1,2);
+    cout << node->data.a <<"\n";
+    Node* node_20 = CreatNode(value_20);
+    Node* node4 = Search(list1, 4);
+    cout <<node4->data.a << "\n";
+    InsertAfterQ(list1,node_20,node4);
+    PrinfList(list1);
 }

@@ -5,13 +5,10 @@ using namespace std;
 Node *CreatNode(Data data_in)
 {
     Node *temp = new Node;
-    if (temp!=NULL)
-    {
+   
     temp->data = data_in;
     temp->pnext = NULL;
     return temp;
-    }
-    else return NULL;
 
 };
 void init (List& lst)
@@ -24,57 +21,95 @@ bool Isempty(List& lst)
     return true ;
     else return false ;
 };
-void AddHead (List& lst, Data value)
+void AddHead (List& lst, Node* node)
 {
-    Node* temp = CreatNode(value);
     if (Isempty(lst)==true)
     {
-        lst.phead = temp;
-        lst.pTail = temp;
+        lst.phead = node;
+        lst.pTail = node;
     }
     else 
     {
-        temp->pnext = lst.phead;
-        lst.phead = temp;
+        node->pnext = lst.phead;
+        lst.phead = node;
     }
-}
-void AddTail(List& lst, Data value)
+};
+void AddTail(List& lst, Node* node)
 {
-    Node* temp = CreatNode(value);
     if (Isempty(lst)==true)
     {
-        lst.phead = temp;
-        lst.pTail = temp;
+        lst.phead = node;
+        lst.pTail = node;
     }
     else{
-        lst.pTail->pnext = temp;
-        lst.pTail = temp;
+        lst.pTail->pnext = node;
+        lst.pTail = node;
     }
+};
+
+void InsertAfterQ(List& lst, Node* p, Node* q)
+{
+	if (q != NULL)
+	{
+		p->pnext = q->pnext;
+		q->pnext = p;
+		if (lst.pTail == q)
+			lst.pTail = p;
+	}
+	else
+		AddHead(lst, p);
+};
+void RemoveHead(List& lst, int&x)
+{
+    if(lst.phead!=NULL)
+    {
+        Node* node = lst.phead;
+        x = node->data.a;
+        lst.phead = node->pnext;
+        delete node;
+    }
+};
+
+Node* Getnode(List& lst, int index)
+{
+    Node* node = lst.phead;
+    int i= 0;
+    while(node!=NULL && i!=index)
+    {
+        i++;
+        node = node->pnext;
+    }
+    if(i!=index)
+    {
+        cout <<"gia tri index khong phu hop" <<"\n";
+    }
+    else
+    {
+        return node;
+    }
+    
 }
 
-void Insert(List& lst, Data value, int posision)
+void PrinfList(List& lst)
 {
-    if(posision ==0 || lst.phead == NULL)
+    if(lst.phead!=NULL)
     {
-        AddHead(lst,value );
-    }
-    else 
-    {
-        int k =1 ;
-        Node *p = lst.phead;
-        while (p!=NULL &&k!=posision)
+        Node* node = lst.phead;
+        while (node!=NULL)
         {
-            p = p->pnext;
-            k++;
+            cout << node->data.a;
+            node = node->pnext;
         }
-        if (k!=posision)
-        {
-            AddHead(lst, value); 
-        }
-        else{
-            Node* temp = CreatNode(value);
-            temp->pnext = p->pnext;
-            p->pnext = temp;
-        }
+        
     }
 }
+Node* Search(List& lst, int x)
+{
+	Node* node = lst.phead;
+	while (node != NULL && node->data.a != x)
+		node = node->pnext;
+	if (node != NULL)
+		return node;
+	return NULL;
+}
+ 
