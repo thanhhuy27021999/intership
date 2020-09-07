@@ -4,30 +4,48 @@ using namespace std;
 
 int main()
 {   
-    Data value,value_20;
-    value_20.a= 20;
+    Data value;
     List list1;
-    init(list1);
+    List list2, list3;
+    Init(list1);
     Node* node;
     for (int i=0; i<10; i++)
     {
-        value.a = i;
+        value.a = rand() % (15 - 1 + 1) + 1;// random value from 1 - 15
         node = CreatNode(value);
         AddTail(list1,node);
     }
-    PrinfList(list1);
+    PrintList(list1);
     cout <<"\n";
+    list2 = SortListAsending(list1);
+    PrintList(list2);
+    cout<< "\n";
+    list3 = SortListDesending(list1);
+    PrintList(list3);
+    cout<<"\n";
     node = Getnode(list1,2);
     cout << node->data.a <<"\n";
-    Node* node_20 = CreatNode(value_20);
-    Node* node4 = Search(list1, 4);
-    cout <<node4->data.a << "\n";
-    InsertAfterQ(list1,node_20,node4);
-    PrinfList(list1);
-    int x;
-    RemoveAfterQ(list1,node4, x);
-    cout<<"\n" << x <<"\n";
-    PrinfList(list1);
-    x = GetLeghtList(list1);
-    cout << "\n" <<x;
-}
+    node = Getnode(list2,2);
+    cout << node->data.a <<"\n";
+    node = Getnode(list3,2);
+    cout << node->data.a <<"\n";
+//  node = Getnode(list2,2);
+//  cout<<node->data.a<<"\n";
+//  node = Getnode(list1,2);
+//  cout<<node->data.a<<"\n";
+//  PrintList(list1);
+//  cout <<"\n";
+//  node = Getnode(list1,2);
+//  cout << node->data.a <<"\n";
+//  Node* node_20 = CreatNode(value_20);
+//  Node* node4 = Search(list1, 4);
+//  cout <<node4->data.a << "\n";
+//  InsertAfterIndex(list1,node_20,node4);
+//  PrintList(list1);
+//  int x;
+//  RemoveAfterIndex(list1,node4, x);
+//  cout<<"\n" << x <<"\n";
+//  PrintList(list1);
+//  x = GetSize(list1);
+//  cout << "\n" <<x;
+ }

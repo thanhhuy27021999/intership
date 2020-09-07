@@ -5,17 +5,16 @@ using namespace std;
 Node *CreatNode(Data data_in)
 {
     Node *temp = new Node;
-   
     temp->data = data_in;
     temp->pnext = NULL;
     return temp;
 
 };
-void init (List& lst)
+void Init (List& lst)
 {
     lst.phead = lst.pTail = NULL;
 };
-bool Isempty(List& lst)
+bool IsEmpty(List& lst)
 {
     if (lst.phead == NULL)
     return true ;
@@ -23,7 +22,7 @@ bool Isempty(List& lst)
 };
 void AddHead (List& lst, Node* node)
 {
-    if (Isempty(lst)==true)
+    if (IsEmpty(lst)==true)
     {
         lst.phead = node;
         lst.pTail = node;
@@ -36,25 +35,28 @@ void AddHead (List& lst, Node* node)
 };
 void AddTail(List& lst, Node* node)
 {
-    if (Isempty(lst)==true)
+    if (IsEmpty(lst)==true)
     {
         lst.phead = node;
         lst.pTail = node;
     }
-    else{
+    else
+    {
         lst.pTail->pnext = node;
         lst.pTail = node;
     }
 };
 
-void InsertAfterQ(List& lst, Node* p, Node* q)
+void InsertAfterIndex(List& lst, Node* p, Node* q)
 {
 	if (q != NULL)
 	{
 		p->pnext = q->pnext;
 		q->pnext = p;
 		if (lst.pTail == q)
+        {
 			lst.pTail = p;
+        }
 	}
 	else
 		AddHead(lst, p);
@@ -90,14 +92,14 @@ Node* Getnode(List& lst, int index)
     
 }
 
-void PrinfList(List& lst)
+void PrintList(List& lst)
 {
     if(lst.phead!=NULL)
     {
         Node* node = lst.phead;
         while (node!=NULL)
         {
-            cout << node->data.a;
+            cout << node->data.a <<"  ";
             node = node->pnext;
         }
         
@@ -110,10 +112,10 @@ Node* Search(List& lst, int x)
 		node = node->pnext;
 	if (node != NULL)
 		return node;
-	return NULL;
+	return nullptr;
 }
  
-void RemoveAfterQ(List& list, Node* q, int& x)
+void RemoveAfterIndex(List& list, Node* q, int& x)
 {
     if(q!=NULL)
     {
@@ -137,7 +139,7 @@ void RemoveAfterQ(List& list, Node* q, int& x)
     }
 };
 
-int GetLeghtList(List& lst)
+int GetSize(List& lst)
 {
     Node* temp; 
     int i = 1;
@@ -148,4 +150,71 @@ int GetLeghtList(List& lst)
         temp = temp->pnext;
     }
     return i;
+}
+
+List SortListAsending(List lst)
+{
+    int k = GetSize(lst);
+    Data a[k];
+    List ListOut;
+    int temp = 0;
+    Node* node = lst.phead;
+    for(int i=0; i<k; i++)
+    {
+        a[i] = node->data;
+        node = node->pnext;
+    }
+
+    for(int i = 0; i<k; i++)
+    {
+        for(int j=0; j<k; j++)
+        {
+            if(a[i].a > a[j].a)
+            {
+                 temp = a[j].a;
+                 a[j].a = a[i].a;
+                 a[i].a = temp;
+            }
+        }
+    }
+
+    for(int i = 0; i<k; i++)
+    {
+        node = CreatNode(a[i]);
+        AddTail(ListOut,node);
+    }
+    return ListOut;
+}
+List SortListDesending(List lst)
+{
+    int k = GetSize(lst);
+    Data a[k];
+    List ListOut;
+    int temp = 0;
+    Node* node = lst.phead;
+    for(int i=0; i<k; i++)
+    {
+        a[i] = node->data;
+        node = node->pnext;
+    }
+
+    for(int i = 0; i<k; i++)
+    {
+        for(int j=0; j<k; j++)
+        {
+            if(a[i].a < a[j].a)
+            {
+                 temp = a[i].a;
+                 a[i].a = a[j].a;
+                 a[j].a = temp;
+            }
+        }
+    }
+
+    for(int i = 0; i<k; i++)
+    {
+        node = CreatNode(a[i]);
+        AddTail(ListOut,node);
+    }
+    return ListOut;
 }
