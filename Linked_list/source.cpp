@@ -24,4 +24,10 @@ int main()
     cout <<node4->data.a << "\n";
     InsertAfterQ(list1,node_20,node4);
     PrinfList(list1);
+    int x;
+    RemoveAfterQ(list1,node4, x);
+    cout<<"\n" << x <<"\n";
+    PrinfList(list1);
+    x = GetLeghtList(list1);
+    cout << "\n" <<x;
 }

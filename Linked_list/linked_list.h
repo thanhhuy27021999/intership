@@ -23,7 +23,8 @@ Node* Getnode(List& lst, int index);
 void InsertAfterQ(List& lst, Node* p, Node* q);
 void PrinfList(List& lst);
 Node* Search(List& lst, int x);
-
+void RemoveAfterQ(List& list, Node* q, int& x);
+int GetLeghtList(List& lst);
 
 
 

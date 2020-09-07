@@ -113,3 +113,39 @@ Node* Search(List& lst, int x)
 	return NULL;
 }
  
+void RemoveAfterQ(List& list, Node* q, int& x)
+{
+    if(q!=NULL)
+    {
+        Node* temp;
+        if(q->pnext!=NULL)//the last member.
+        {
+            temp = q->pnext;
+            q->pnext =  temp->pnext;
+            x = temp->data.a;
+            delete temp;
+        }
+        else
+        {
+            cout <<"day la gia tri cuoi cung cua list" <<"\n";
+        }
+        
+    }
+    else
+    {
+        cout << "kiem tra lai chuoi" <<"\n";
+    }
+};
+
+int GetLeghtList(List& lst)
+{
+    Node* temp; 
+    int i = 1;
+    temp = lst.phead;
+    while (temp->pnext!= NULL)
+    {
+        i++;
+        temp = temp->pnext;
+    }
+    return i;
+}
