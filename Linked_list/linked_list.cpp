@@ -8,8 +8,8 @@ Node *CreatNode(Data data_in)
     temp->data = data_in;
     temp->pnext = NULL;
     return temp;
-
 };
+
 void Init (List& lst)
 {
     lst.phead = lst.pTail = NULL;
@@ -89,7 +89,6 @@ Node* Getnode(List& lst, int index)
     {
         return node;
     }
-    
 }
 
 void PrintList(List& lst)
@@ -102,7 +101,6 @@ void PrintList(List& lst)
             cout << node->data.a <<"  ";
             node = node->pnext;
         }
-        
     }
 }
 Node* Search(List& lst, int x)
@@ -155,7 +153,13 @@ int GetSize(List& lst)
 List SortListAsending(List lst)
 {
     int k = GetSize(lst);
-    Data a[k];
+    if (k==0)
+    {
+        cout << "chieu dai cua chuoi khong hop le" << "\n";
+    }
+    else
+    {
+        Data a[k];
     List ListOut;
     int temp = 0;
     Node* node = lst.phead;
@@ -184,11 +188,18 @@ List SortListAsending(List lst)
         AddTail(ListOut,node);
     }
     return ListOut;
+    }
 }
 List SortListDesending(List lst)
 {
     int k = GetSize(lst);
-    Data a[k];
+    if(k==0)
+    {
+        cout << "Do dai chuoi khong hop le" <<"\n";
+    }
+    else
+    {
+        Data a[k];
     List ListOut;
     int temp = 0;
     Node* node = lst.phead;
@@ -217,4 +228,18 @@ List SortListDesending(List lst)
         AddTail(ListOut,node);
     }
     return ListOut;
+    }
+}
+void DestructList(List& lst)
+{
+    Node* node;
+    Node* temp;
+    node = lst.phead;
+    while(node->pnext!=NULL)
+    {
+        temp = node;
+        delete(temp);
+        node = node->pnext;
+    }
+    delete(node);
 }

@@ -27,6 +27,8 @@ void RemoveAfterIndex(List& list, Node* q, int& x);
 int GetSize(List& lst);
 List SortListDesending(List lst);
 List SortListAsending(List lst);
+void DestructList(List& lst);
+
 
 
 
