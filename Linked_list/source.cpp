@@ -31,9 +31,15 @@ int random=rand() % 50;
 // tao Queue co so phan tu ranndom
 CreateQueue(q,random);
 for(int i=0;i<random;i++)
-{
-EnQueue(q,rand() % 50);
-}
+   {
+     EnQueue(q,rand() % 50);
+   }
+cout << "random_size : " << random << endl;
+for (int i = 0; i < random; i++)
+   {
+      cout << q.data[i] << endl;
+   }
+        
 }
 /////////
 
