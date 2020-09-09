@@ -20,6 +20,7 @@ int main()
     
 
 //Main_Queue
+#include"Queue.h"
 int n;
 cout<<"Nhap vao so phan tu cua Queue : ";
 cin>>n;
