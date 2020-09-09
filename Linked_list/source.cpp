@@ -12,35 +12,35 @@ int main()
     int n;
     cout <<"moi nhap so luong so n= ";
     cin >> n;
-    for (int i=0; i<n; i++)
+    for (int i = 0; i < n; i++)
     {
         value.a = rand() % (15 - 1 + 1) + 1;// random value from 1 - 15
         node = CreatNode(value);
-        AddTail(list1,node);
-    
+        AddTail(list1, node);
+    }
 
-//Main_Queue
-#include"Queue.h"
-int n;
-cout<<"Nhap vao so phan tu cua Queue : ";
-cin>>n;
-Queue q;
-// tao Queue co so phan tu do user nhap vao
-CreateQueue(q,n);
-int random=rand() % 50;
-// tao Queue co so phan tu ranndom
-CreateQueue(q,random);
-for(int i=0;i<random;i++)
-   {
-     EnQueue(q,rand() % 50);
-   }
-cout << "random_size : " << random << endl;
-for (int i = 0; i < random; i++)
-   {
-      cout << q.data[i] << endl;
-   }
-        
-}
+    //Main_Queue
+    int n;
+    cout << "Nhap vao so phan tu cua Queue 1 : ";
+    cin >> n;
+    Queue q1, q2;
+    // tao Queue co so phan tu do user nhap vao
+    CreateQueue(q1, n);
+    int random_size_q2 = rand() % 20;
+    // tao Queue co so phan tu ranndom
+    cout << "random_size_q2 is  : " << random_size_q2 << endl;
+    CreateQueue(q2, random_size_q2);
+    for (int i = 0; i < random_size_q2; i++)
+    {
+        EnQueue(q2, rand() % 20);
+
+    }
+    Print(q2);
+    Sort(q2);
+    cout << "After sort Queue" << endl;
+    Print(q2);
+
+
 /////////
 
 
@@ -78,4 +78,6 @@ for (int i = 0; i < random; i++)
 //  PrintList(list1);
 //  x = GetSize(list1);
 //  cout << "\n" <<x;
- }
+ 
+    
+    }
