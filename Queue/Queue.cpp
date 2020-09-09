@@ -28,7 +28,7 @@ bool isFull(Queue &q)
      return (size(q) == 0);
  }
 
- int EnQueue(Queue &q, int x) 
+ void EnQueue(Queue &q, int x) 
  {
 if (isFull(q))
 	{
@@ -41,7 +41,7 @@ if (isFull(q))
 }
 
 
- int DeQueue(Queue &q, int &x) 
+ void DeQueue(Queue &q, int &x) 
  {
 if (isEmpty(q))
 	{
