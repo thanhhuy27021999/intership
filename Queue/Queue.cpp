@@ -57,7 +57,11 @@ int Peek(Queue& q)
 	{
 		cout << "Queue is Empty" << endl;
 	}
-	return q.data[q.front];
+	else
+	{
+		return q.data[q.front];
+	}
+	
 }
 void Print(Queue q)
 {
