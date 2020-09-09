@@ -17,7 +17,27 @@ int main()
         value.a = rand() % (15 - 1 + 1) + 1;// random value from 1 - 15
         node = CreatNode(value);
         AddTail(list1,node);
-    }
+    
+
+//Main_Queue
+int n;
+cout<<"Nhap vao so phan tu cua Queue : ";
+cin>>n;
+Queue q;
+// tao Queue co so phan tu do user nhap vao
+CreateQueue(q,n);
+int random=rand() % 50;
+// tao Queue co so phan tu ranndom
+CreateQueue(q,random);
+for(int i=0;i<random;i++)
+{
+EnQueue(q,rand() % 50);
+}
+}
+/////////
+
+
+
     //PrintList(list1);
    //DestructList(list1);
     //cout <<"\n";
