@@ -28,12 +28,12 @@ bool isFull(Queue &q)
      return (size(q) == 0);
  }
 
- void EnQueue(Queue &q, int x) 
+ int EnQueue(Queue &q, int x) 
  {
 if (isFull(q))
 	{
 		cout << "Queue is Full";
-		
+		return 0;
 	}
 	q.rear = (q.rear + 1) % q.capacity;
 	q.data[q.rear] = x;
@@ -41,12 +41,12 @@ if (isFull(q))
 }
 
 
- void DeQueue(Queue &q, int &x) 
+ int DeQueue(Queue &q, int &x) 
  {
 if (isEmpty(q))
 	{
 		cout << "Queue is Empty";
-		
+		return 0;
 	}
 	q.front = (q.front + 1) % q.capacity;
 	q.count--;
