@@ -76,6 +76,10 @@ void Print(Queue q)
 //selection sort
 void Sort(Queue& q)
 {
+	if (q.capacity == 0 || q.capacity == 0 || q.count == 0 || q.count == 1)
+	{
+		return;
+	}
 	int i, j, min_idx;
 	for (i = q.front; i < q.rear - 1; i++)
 	{
