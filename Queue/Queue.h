@@ -11,7 +11,7 @@ struct Queue
 	int count;
 };
 void CreateQueue(Queue& q, int size);
-int size(Queue& q);
+int GetSize(Queue& q);
 bool isFull(Queue& q);
 bool isEmpty(Queue& q);
 int EnQueue(Queue& q, int x);

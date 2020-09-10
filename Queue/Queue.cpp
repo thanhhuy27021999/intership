@@ -11,7 +11,7 @@ void CreateQueue(Queue& q, int size)
 }
 
 
-int size(Queue& q)
+int GetSize(Queue& q)
 {
 	return q.count;
 }
@@ -20,12 +20,12 @@ int size(Queue& q)
 
 bool isFull(Queue& q)
 {
-	return (size(q) == q.capacity);
+	return (GetSize(q) == q.capacity);
 }
 
 bool isEmpty(Queue& q)
 {
-	return (size(q) == 0);
+	return (GetSize(q) == 0);
 }
 
 int  EnQueue(Queue& q, int x)
