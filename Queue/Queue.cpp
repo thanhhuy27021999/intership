@@ -18,19 +18,19 @@ int GetSize(Queue& q)
 
 
 
-bool isFull(Queue& q)
+bool IsFull(Queue& q)
 {
 	return (GetSize(q) == q.capacity);
 }
 
-bool isEmpty(Queue& q)
+bool IsEmpty(Queue& q)
 {
 	return (GetSize(q) == 0);
 }
 
 int  EnQueue(Queue& q, int x)
 {
-	if (isFull(q))
+	if (IsFull(q))
 	{
 		cout << "Queue is Full";
 		return 0;
@@ -43,7 +43,7 @@ int  EnQueue(Queue& q, int x)
 
 int DeQueue(Queue& q)
 {
-	if (isEmpty(q))
+	if (IsEmpty(q))
 	{
 		cout << "Queue is Empty";
 		return 0;
@@ -53,7 +53,7 @@ int DeQueue(Queue& q)
 }
 int Peek(Queue& q)
 {
-	if (isEmpty(q))
+	if (IsEmpty(q))
 	{
 		cout << "Queue is Empty" << endl;
 	}
