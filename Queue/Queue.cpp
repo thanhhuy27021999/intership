@@ -46,7 +46,7 @@ int DeQueue(Queue& q)
 	if (IsEmpty(q))
 	{
 		cout << "Queue is Empty";
-		return 0;
+		return -1;
 	}
 	q.front = (q.front + 1) % q.capacity;
 	q.count--;
@@ -56,6 +56,7 @@ int Peek(Queue& q)
 	if (IsEmpty(q))
 	{
 		cout << "Queue is Empty" << endl;
+		return -1;
 	}
 	else
 	{
