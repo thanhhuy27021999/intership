@@ -81,10 +81,10 @@ void Sort(Queue& q)
 		return;
 	}
 	int i, j, min_idx;
-	for (i = q.front; i < q.rear - 1; i++)
+	for (i = q.front; i < q.rear ; i++)
 	{
 		min_idx = i;
-		for (j = i + 1; j < q.rear; j++)
+		for (j = i + 1; j < q.rear+1; j++)
 		{
 			if (q.data[min_idx] > q.data[j])
 				min_idx = j;
