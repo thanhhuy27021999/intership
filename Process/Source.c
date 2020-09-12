@@ -2,7 +2,6 @@
 
 int main()
 {
-	//printf("%d\n",is_present("vim"));
-    get_job("/proc/1/");
-	return 0;
+   read_proc();
+   return 0;
 }
