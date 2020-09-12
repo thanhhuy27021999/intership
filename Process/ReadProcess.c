@@ -16,22 +16,22 @@ void get_job(char * path)
 		  fscanf( file, "%s ", null);
 		if(strcmp(null,"Name:")==0)
 		   {
-			  fscanf( file, "%s ", name);
+			fscanf( file, "%s ", name);
 		   }
 		if(strcmp(null,"Cpus_allowed:")==0)
 		   {
-			  fscanf( file, "%s ", Cpus_allowed);
-              break;
+			 fscanf( file, "%s ", Cpus_allowed);
+                         break;
 		   }
-	//	if(strcmp(null,"Mems_allowed:")==0)
-	//	    {
-	//		  fscanf( file, "%s ", Mems_allowed);
+	      //	if(strcmp(null,"Mems_allowed:")==0)
+	      //	    {
+	     //		  fscanf( file, "%s ", Mems_allowed);
 			  
-	//	    }
-	  }
+	     //	    }
+	   }
 
-	//printf("Name : %s\nCpus_allowed : %s\nMems_allowed : %s \n",name,Cpus_allowed,Mems_allowed);
-     printf("Name : %s\nCpus_allowed : %s\n",name,Cpus_allowed);
+	       //printf("Name : %s\nCpus_allowed : %s\nMems_allowed : %s \n",name,Cpus_allowed,Mems_allowed);
+              printf("Name : %s\nCpus_allowed : %s\n",name,Cpus_allowed);
 }
 void read_proc(void)
 {
@@ -55,7 +55,7 @@ void read_proc(void)
 		strcat(curr_path,dirname_buf);
 		strcat(curr_path,"/");
 		printf("Path name : %s\n",curr_path);
-        get_job(curr_path);
+                get_job(curr_path);
 		
 	}
 	free(curr_path);
