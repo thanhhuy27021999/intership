@@ -32,7 +32,7 @@ void get_job(char * path)
 
 	       //printf("Name : %s\nCpus_allowed : %s\nMems_allowed : %s \n",name,Cpus_allowed,Mems_allowed);
               printf("Name : %s\nCpus_allowed : %s\n",name,Cpus_allowed);
-	      free(path);
+	     
 }
 void read_proc(void)
 {
