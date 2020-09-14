@@ -5,4 +5,4 @@
 #include <ctype.h> // isdigit() function
 void GetJob(char * path);//get info of one process
 void ReadProc(void);     //get info of all process
-int is_uint(char input[]);//check input is a digit
+
