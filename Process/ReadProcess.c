@@ -30,6 +30,7 @@ void GetJob(char * path)
 	   }
 	      fclose(flie);
 	       printf("Name : %s\nCpus_allowed : %s\nMems_allowed : %s \n",name,Cpus_allowed,Mems_allowed);
+	       free(pth);
 	     
 }
 void ReadProc(void)
