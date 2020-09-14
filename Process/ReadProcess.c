@@ -1,5 +1,5 @@
 #include"ReadProcess.h"
-void get_job(char * path)
+void GetJob(char * path)
 {
 	char * pth=malloc(sizeof(char)*90);
 	char name[30],Cpus_allowed[30],Mems_allowed[30],null[30];
@@ -33,7 +33,7 @@ void get_job(char * path)
               printf("Name : %s\nCpus_allowed : %s\n",name,Cpus_allowed);
 	     
 }
-void read_proc(void)
+void ReadProc(void)
 {
 	char * dirname_buf, * curr_path=malloc(sizeof(char)*10);
 	DIR * directory;
@@ -54,7 +54,7 @@ void read_proc(void)
 		strcat(curr_path,dirname_buf);
 		strcat(curr_path,"/");
 		printf("Path name : %s\n",curr_path);
-                get_job(curr_path);
+                GetJob(curr_path);
 		
 	}
 	free(curr_path);
