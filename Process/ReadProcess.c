@@ -46,7 +46,7 @@ void ReadProc(void)
 	while((dir=readdir(directory))!=NULL)
 	{
 		dirname_buf=dir->d_name;
-		if(!is_uint(dirname_buf))
+		if(atoi(dirname_buf)==0)
 		{
 		  continue;
 		}
@@ -59,15 +59,4 @@ void ReadProc(void)
 	}
 	free(curr_path);
 }
-int is_uint(char input[])
-{
-	int i;
-	for (i=0;i<strlen(input);i++)
-	{
-		if(!isdigit(input[i]))
-		{
-			return 0;
-		}
-	}
-	return 1;
-}
+
