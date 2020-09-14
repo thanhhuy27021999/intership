@@ -28,7 +28,7 @@ void GetJob(char * path)
 			  break;
 	     	    }
 	   }
-	      fclose(flie);
+	      fclose(file);
 	       printf("Name : %s\nCpus_allowed : %s\nMems_allowed : %s \n",name,Cpus_allowed,Mems_allowed);
 	       free(pth);
 	     
