@@ -48,7 +48,7 @@ void read_proc(void)
 		dirname_buf=dir->d_name;
 		if(!is_uint(dirname_buf))
 		{
-			continue;
+		  continue;
 		}
 		strcpy(curr_path,"/proc/");
 		strcat(curr_path,dirname_buf);
