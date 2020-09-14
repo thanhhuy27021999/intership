@@ -8,8 +8,7 @@ void get_job(char * path)
 	FILE * file=fopen(pth,"r");
 	if(!file)
 	{
-		printf("cann't open file with path");
-		
+	  printf("cann't open file with path");
 	}
 	  while(1)
 	  {
@@ -42,8 +41,7 @@ void read_proc(void)
 	directory=opendir("/proc");
 	if(directory==NULL)
 	{
-		printf("Unable to open /proc for read");
-	
+	  printf("Unable to open /proc for read");
 	}
 	while((dir=readdir(directory))!=NULL)
 	{
