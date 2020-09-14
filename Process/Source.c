@@ -2,6 +2,6 @@
 
 int main()
 {
-   read_proc();
+   ReadProc();
    return 0;
 }
