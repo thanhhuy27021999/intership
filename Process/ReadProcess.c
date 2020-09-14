@@ -58,5 +58,6 @@ void ReadProc(void)
 		
 	}
 	free(curr_path);
+	
 }
 
