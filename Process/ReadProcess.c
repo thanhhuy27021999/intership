@@ -2,7 +2,7 @@
 void GetJob(char * path)
 {
 	char * pth=malloc(sizeof(char)*90);
-	char name[30],Cpus_allowed[30],Mems_allowed[30],null[30];
+	char name[30],Cpus_allowed[30],Mems_allowed[300],null[30];
 	strcpy(pth,path);
 	strcat(pth,"status");
 	FILE * file=fopen(pth,"r");
@@ -20,17 +20,16 @@ void GetJob(char * path)
 		if(strcmp(null,"Cpus_allowed:")==0)
 		   {
 			 fscanf( file, "%s ", Cpus_allowed);
-                         break;
+                        
 		   }
-	      //	if(strcmp(null,"Mems_allowed:")==0)
-	      //	    {
-	     //		  fscanf( file, "%s ", Mems_allowed);
-			  
-	     //	    }
+	      	if(strcmp(null,"Mems_allowed:")==0)
+	      	    {
+	     		 fscanf( file, "%s ", Mems_allowed);
+			  break;
+	     	    }
 	   }
 	      fclose(flie);
-	       //printf("Name : %s\nCpus_allowed : %s\nMems_allowed : %s \n",name,Cpus_allowed,Mems_allowed);
-              printf("Name : %s\nCpus_allowed : %s\n",name,Cpus_allowed);
+	       printf("Name : %s\nCpus_allowed : %s\nMems_allowed : %s \n",name,Cpus_allowed,Mems_allowed);
 	     
 }
 void ReadProc(void)
