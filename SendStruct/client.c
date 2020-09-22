@@ -5,10 +5,10 @@
 #include <unistd.h>
 #define PORT 7473
 
-struct Test {
+typedef struct Test {
   int id;
   char data;
-};
+} Test ;
 
 unsigned char *SerializeInt(unsigned char *buffer, int value) 
 {
