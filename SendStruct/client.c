@@ -6,7 +6,7 @@
 #define PORT 8080
 
 struct Test {
-  int Id;
+  int id;
   char data;
 };
 
