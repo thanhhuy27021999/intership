@@ -62,7 +62,7 @@ int main(int argc, char const *argv[])
   }
   /////
   struct Test mess;
-  mess.Id = 1;
+  mess.id = 1;
   mess.data = 's';
   unsigned char buffer[32], *ptr;
   ptr = SerializeTest(buffer, mess);
