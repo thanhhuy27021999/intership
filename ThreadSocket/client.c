@@ -7,7 +7,8 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-void *ClientThread(void *arg) {
+void *ClientThread(void *arg) 
+{
   printf("In thread\n");
   char message[1000] = "Message from client";
   char buffer[1024];
@@ -34,13 +35,15 @@ void *ClientThread(void *arg) {
   pthread_exit(NULL);
 }
 
-int main() {
+int main() 
+{
   int i = 0;
   pthread_t tid[3];
-  while (i < 2) {
-    if (pthread_create(&tid[i], NULL, ClientThread, NULL) != 0)
+  while (i < 2) 
+  {
+    pthread_create(&tid[i], NULL, ClientThread, NULL);
         i++;
-    
+  }
     sleep(20);
     i = 0;
     while (i < 2) {
