@@ -11,26 +11,26 @@ void CreateQueue(Queue& q, int size)
 }
 
 
-int size(Queue& q)
+int GetSize(Queue& q)
 {
 	return q.count;
 }
 
 
 
-bool isFull(Queue& q)
+bool IsFull(Queue& q)
 {
-	return (size(q) == q.capacity);
+	return (GetSize(q) == q.capacity);
 }
 
-bool isEmpty(Queue& q)
+bool IsEmpty(Queue& q)
 {
-	return (size(q) == 0);
+	return (GetSize(q) == 0);
 }
 
 int  EnQueue(Queue& q, int x)
 {
-	if (isFull(q))
+	if (IsFull(q))
 	{
 		cout << "Queue is Full";
 		return 0;
@@ -43,21 +43,26 @@ int  EnQueue(Queue& q, int x)
 
 int DeQueue(Queue& q)
 {
-	if (isEmpty(q))
+	if (IsEmpty(q))
 	{
 		cout << "Queue is Empty";
-		return 0;
+		return -1;
 	}
 	q.front = (q.front + 1) % q.capacity;
 	q.count--;
 }
 int Peek(Queue& q)
 {
-	if (isEmpty(q))
+	if (IsEmpty(q))
 	{
 		cout << "Queue is Empty" << endl;
+		return -1;
 	}
-	return q.data[q.front];
+	else
+	{
+		return q.data[q.front];
+	}
+	
 }
 void Print(Queue q)
 {
@@ -71,11 +76,15 @@ void Print(Queue q)
 //selection sort
 void Sort(Queue& q)
 {
+	if (q.capacity == 0 || q.capacity == 0 || q.count == 0 || q.count == 1)
+	{
+		return;
+	}
 	int i, j, min_idx;
-	for (i = q.front; i < q.rear - 1; i++)
+	for (i = q.front; i < q.rear ; i++)
 	{
 		min_idx = i;
-		for (j = i + 1; j < q.rear; j++)
+		for (j = i + 1; j < q.rear+1; j++)
 		{
 			if (q.data[min_idx] > q.data[j])
 				min_idx = j;
