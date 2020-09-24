@@ -39,9 +39,8 @@ int main() {
   pthread_t tid[3];
   while (i < 2) {
     if (pthread_create(&tid[i], NULL, ClientThread, NULL) != 0)
-     
-    i++;
-
+        i++;
+    
     sleep(20);
     i = 0;
     while (i < 2) {
