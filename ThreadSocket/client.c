@@ -46,7 +46,8 @@ int main()
   }
     sleep(20);
     i = 0;
-    while (i < 2) {
+    while (i < 2) 
+    {
       pthread_join(tid[i++], NULL);
       printf("%d:\n", i);
     }
