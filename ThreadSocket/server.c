@@ -23,7 +23,8 @@ void *SocketThread(void *arg)
   pthread_exit(NULL);
 }
 
-int main() {
+int main() 
+{
 
   int serverSocket, newSocket;
   struct sockaddr_in serverAddr;
@@ -53,13 +54,16 @@ int main() {
     //accept all request
     newSocket = accept(serverSocket, (struct sockaddr *)&serverStorage, &addr_size);
     pthread_create(&tid[i++], NULL, SocketThread, &newSocket);
-    if (i >= 3) {
-      i = 0;
-      while (i < 3) {
-        pthread_join(tid[i++], NULL);
+    if (i >= 3) 
+     {
+       i = 0;
+       while (i < 3) 
+        {
+         pthread_join(tid[i++], NULL);
+        }
+       i = 0;
       }
-      i = 0;
     }
-  }
   return 0;
+  
 }
