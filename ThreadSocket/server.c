@@ -8,7 +8,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 char client_message[2000];
-char buffer[1024] = "Message from server";
+//char buffer[1024] = "Message from server";
+char buffer[1024];
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 void *SocketThread(void *arg) 
 {
@@ -16,6 +17,9 @@ void *SocketThread(void *arg)
   recv(newSocket, client_message, 2000, 0);
   printf("%s\n", client_message);
   pthread_mutex_lock(&lock);
+  int n=0;
+  while ((buffer[n++] = getchar()) != '\n')
+  pthread_mutex_unlock(&lock);
   sleep(1);
   send(newSocket, buffer, strlen(buffer), 0);
   printf("Exit socketThread \n");
