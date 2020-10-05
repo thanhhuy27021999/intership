@@ -30,11 +30,13 @@ void *mythread (void *arg)
                   (address.sin_port)); 
     char buff[MAX]; 
 	int n; 
-	for (;;) { 
+	for (;;) 
+    { 
 		bzero(buff, sizeof(buff)); 
         read(newarg, buff, sizeof(buff)); 
         printf("From Client : %s", buff); 
-		if ((strncmp(buff, "exit", 4)) == 0) { 
+		if ((strncmp(buff, "exit", 4)) == 0) 
+        { 
 			printf("Client Exit...\n");
             close(newarg); 
 			break; 
