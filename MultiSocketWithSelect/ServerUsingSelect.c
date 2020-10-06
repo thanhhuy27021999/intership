@@ -10,7 +10,8 @@
 #include <unistd.h> //close
 #define PORT 7473
 #define MAX 1024
-void ChatWithClient(int serverSocket) {
+
+void ChatWithClient(int serverSocket,struct sockaddr_in address) {
   char buffC[MAX];
   char buffS[MAX];
   int n;
@@ -18,7 +19,7 @@ void ChatWithClient(int serverSocket) {
     read(serverSocket, buffC, sizeof(buffC));
     printf("Message from Client : %s", buffC);
     if ((strncmp(buffC, "exit", 4)) == 0) {
-      printf("Client Exit...\n");
+      printf("Client have IP : %s  exit...\n",inet_ntoa(address.sin_addr));
       break;
     }
     bzero(buffS, sizeof(buffS));
@@ -110,7 +111,7 @@ int main(int argc, char *argv[]) {
         perror("accept");
         exit(EXIT_FAILURE);
       }
-      ChatWithClient(new_socket);
+      ChatWithClient(new_socket,address);
       // add new socket to array of sockets
       for (i = 0; i < max_clients; i++) {
         // if position is empty
