@@ -8,8 +8,26 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#define MAX 100
-
+#define MAX 1024
+void ChatWithServer(int clientSocket) 
+{ 
+    char buffC[MAX]; 
+    char buffS[MAX]; 
+    int n; 
+    for (;;) { 
+        bzero(buffC, sizeof(buffC)); 
+        printf("Send message to Server : "); 
+        n = 0; 
+        while ((buffC[n++] = getchar()) != '\n');  
+        send(clientSocket, buffC, sizeof(buffC), 0); 
+        read(clientSocket, buffS, sizeof(buffS));
+        printf("Message from Server : %s", buffS);     
+        if ((strncmp(buffC, "exit", 4)) == 0) { 
+            printf("Client Exit...\n"); 
+            break; 
+        } 
+    } 
+} 
 int main() {
   int clientSocket;
   struct sockaddr_in serverAddr;
@@ -20,16 +38,13 @@ int main() {
 
   serverAddr.sin_family = AF_INET;
 
-  serverAddr.sin_port = htons(8888);
+  serverAddr.sin_port = htons(7473);
 
   serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
   memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
 
   addr_size = sizeof serverAddr;
   connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
-
-  send(clientSocket, buffC, sizeof(buffC), 0);
-  read(clientSocket, buffS, sizeof(buffS));
-  printf("Message from Server : %s", buffS);
+  ChatWithServer(clientSocket);
   close(clientSocket);
 }
