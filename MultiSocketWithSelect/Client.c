@@ -18,14 +18,17 @@ void ChatWithServer(int clientSocket)
         bzero(buffC, sizeof(buffC)); 
         printf("Send message to Server : "); 
         n = 0; 
+        
         while ((buffC[n++] = getchar()) != '\n');  
-        send(clientSocket, buffC, sizeof(buffC), 0); 
-        read(clientSocket, buffS, sizeof(buffS));
-        printf("Message from Server : %s", buffS);     
-        if ((strncmp(buffC, "exit", 4)) == 0) { 
+         if ((strncmp(buffC, "exit", 4)) == 0) { 
+             send(clientSocket, buffC, sizeof(buffC), 0); 
             printf("Client Exit...\n"); 
             break; 
         } 
+        send(clientSocket, buffC, sizeof(buffC), 0); 
+        read(clientSocket, buffS, sizeof(buffS));
+        printf("Message from Server : %s", buffS);     
+       
     } 
 } 
 int main() {
