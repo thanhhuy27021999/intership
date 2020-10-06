@@ -10,21 +10,20 @@
 #include <unistd.h> //close
 #define PORT 7473
 #define MAX 1024
-void ChatWithClient(int serverSocket) 
-{ 
-    char buffC[MAX]; 
-    char buffS[MAX]; 
-    int n; 
-    for (;;) { 
-		read(serverSocket, buffC, sizeof(buffC));
-        printf("Message from Client : %s", buffC);  
-        bzero(buffS, sizeof(buffS)); 
-        printf("Send message to Client : "); 
-        n = 0; 
-        while ((buffS[n++] = getchar()) != '\n'); 
-        send(serverSocket, buffS, sizeof(buffS), 0);
-       
-    } 
+void ChatWithClient(int serverSocket) {
+  char buffC[MAX];
+  char buffS[MAX];
+  int n;
+  for (;;) {
+    read(serverSocket, buffC, sizeof(buffC));
+    printf("Message from Client : %s", buffC);
+    bzero(buffS, sizeof(buffS));
+    printf("Send message to Client : ");
+    n = 0;
+    while ((buffS[n++] = getchar()) != '\n')
+      ;
+    send(serverSocket, buffS, sizeof(buffS), 0);
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -120,8 +119,9 @@ while ((server_message[count++] = getchar()) != '\n')
         exit(EXIT_FAILURE);
       }
       // send new connection greeting message
-     // send(new_socket, server_message, sizeof(server_message), 0);
-     // { perror("send"); }
+      // send(new_socket, server_message, sizeof(server_message), 0);
+      ChatWithClient(new_socket);
+      // { perror("send"); }
       // add new socket to array of sockets
       for (i = 0; i < max_clients; i++) {
         // if position is empty
@@ -132,7 +132,7 @@ while ((server_message[count++] = getchar()) != '\n')
         }
       }
     }
-
+    /*
     // read message form client
     for (i = 0; i < max_clients; i++) {
       sd = client_socket[i];
@@ -141,13 +141,13 @@ while ((server_message[count++] = getchar()) != '\n')
 
        // read(sd, buffer, 1024);
        // printf("Message from client : %s\n", buffer);
-       ChatWithClient(sd);
+        ChatWithClient(sd);
         close(sd);
-        client_socket[i] = 0;
+      //  client_socket[i] = 0;
       }
     }
+    */
   }
 
   return 0;
 }
-
