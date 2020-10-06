@@ -8,7 +8,7 @@
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <sys/types.h>
 #include <unistd.h> //close
-#define PORT 7473
+#define PORT 8080
 #define MAX 1024
 void ChatWithClient(int serverSocket) {
   char buffC[MAX];
@@ -17,6 +17,10 @@ void ChatWithClient(int serverSocket) {
   for (;;) {
     read(serverSocket, buffC, sizeof(buffC));
     printf("Message from Client : %s", buffC);
+     if ((strncmp(buffC, "exit", 4)) == 0) { 
+            printf("Client Exit...\n"); 
+            break; 
+        } 
     bzero(buffS, sizeof(buffS));
     printf("Send message to Client : ");
     n = 0;
