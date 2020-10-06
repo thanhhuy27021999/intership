@@ -8,7 +8,7 @@
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <sys/types.h>
 #include <unistd.h> //close
-#define PORT 8080
+#define PORT 7473
 #define MAX 1024
 void ChatWithClient(int serverSocket) {
   char buffC[MAX];
@@ -17,10 +17,10 @@ void ChatWithClient(int serverSocket) {
   for (;;) {
     read(serverSocket, buffC, sizeof(buffC));
     printf("Message from Client : %s", buffC);
-     if ((strncmp(buffC, "exit", 4)) == 0) { 
-            printf("Client Exit...\n"); 
-            break; 
-        } 
+    if ((strncmp(buffC, "exit", 4)) == 0) {
+      printf("Client Exit...\n");
+      break;
+    }
     bzero(buffS, sizeof(buffS));
     printf("Send message to Client : ");
     n = 0;
@@ -31,7 +31,6 @@ void ChatWithClient(int serverSocket) {
 }
 
 int main(int argc, char *argv[]) {
-  // int opt = TRUE;
   int master_socket, addrlen, new_socket, client_socket[30];
   int max_clients = 30, activity, i, valread, sd;
   int max_sd;
@@ -44,14 +43,6 @@ int main(int argc, char *argv[]) {
   // set of socket descriptors
   fd_set readfds; // socket descriptor
 
-  /*
-  printf("server_message : ");
-  char server_message[30];
-  int count = 0;
-while ((server_message[count++] = getchar()) != '\n')
-;
-    */
-  char server_message[30] = "Server\n";
   for (i = 0; i < max_clients; i++) {
     client_socket[i] = 0;
   }
@@ -101,9 +92,6 @@ while ((server_message[count++] = getchar()) != '\n')
       if (sd > max_sd)
         max_sd = sd;
     }
-
-    // wait for an activity on one of the sockets , timeout is NULL ,
-    // so wait indefinitely
     // activity = select( max_sd + 1 , &readfds , NULL , NULL , &time_out);
     activity = select(max_sd + 1, &readfds, NULL, NULL, &time_out);
     if ((activity < 0) && (errno != EINTR)) {
@@ -122,35 +110,16 @@ while ((server_message[count++] = getchar()) != '\n')
         perror("accept");
         exit(EXIT_FAILURE);
       }
-      // send new connection greeting message
-      // send(new_socket, server_message, sizeof(server_message), 0);
       ChatWithClient(new_socket);
-      // { perror("send"); }
       // add new socket to array of sockets
       for (i = 0; i < max_clients; i++) {
         // if position is empty
         if (client_socket[i] == 0) {
           client_socket[i] = new_socket;
-          //	printf("Adding to list of sockets as %d\n" , i);
           break;
         }
       }
     }
-    /*
-    // read message form client
-    for (i = 0; i < max_clients; i++) {
-      sd = client_socket[i];
-
-      if (FD_ISSET(sd, &readfds)) {
-
-       // read(sd, buffer, 1024);
-       // printf("Message from client : %s\n", buffer);
-        ChatWithClient(sd);
-        close(sd);
-      //  client_socket[i] = 0;
-      }
-    }
-    */
   }
 
   return 0;
