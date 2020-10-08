@@ -34,11 +34,7 @@ void ChatWithClient(int serverSocket,struct sockaddr_in address) {
     send(serverSocket, buffS, sizeof(buffS), 0);
   }
 }
-void delay(int second){
-int milsec = 1000 * second;
-clock_t startTime = clock();
-while(clock() < (startTime + milsec));
-}
+
 int main(int argc, char *argv[]) {
   int master_socket, addrlen, new_socket, client_socket[30];
   int max_clients = 30, activity, i, valread, sd;
