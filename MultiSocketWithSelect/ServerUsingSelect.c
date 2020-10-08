@@ -8,6 +8,10 @@
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <sys/types.h>
 #include <unistd.h> //close
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdio.h>
+#include<time.h>
 #define PORT 7473
 #define MAX 1024
 
@@ -30,14 +34,18 @@ void ChatWithClient(int serverSocket,struct sockaddr_in address) {
     send(serverSocket, buffS, sizeof(buffS), 0);
   }
 }
-
+void delay(int second){
+int milsec = 1000 * second;
+clock_t startTime = clock();
+while(clock() < (startTime + milsec));
+}
 int main(int argc, char *argv[]) {
   int master_socket, addrlen, new_socket, client_socket[30];
   int max_clients = 30, activity, i, valread, sd;
   int max_sd;
   struct sockaddr_in address;
   struct timeval time_out;
-  time_out.tv_sec = 5;
+  //time_out.tv_sec = 10;
   time_out.tv_usec = 0;
   char buffer[1025];
 
@@ -71,6 +79,7 @@ int main(int argc, char *argv[]) {
   addrlen = sizeof(address);
 
   while (1) {
+    time_out.tv_sec = 10;
     // clear the socket set
     FD_ZERO(&readfds);
 
@@ -81,29 +90,22 @@ int main(int argc, char *argv[]) {
     // printf("max_sd = %d\n",max_sd);
     // printf("master_socket = %d\n",master_socket);
     // add child sockets to set
-    for (i = 0; i < max_clients; i++) {
-      // socket descriptor
-      sd = client_socket[i];
-
-      // if valid socket descriptor then add to read list
-      if (sd > 0)
-        FD_SET(sd, &readfds);
-
-      // highest file descriptor number, need it for the select function
-      if (sd > max_sd)
-        max_sd = sd;
-    }
-    // activity = select( max_sd + 1 , &readfds , NULL , NULL , &time_out);
     activity = select(max_sd + 1, &readfds, NULL, NULL, &time_out);
+    // server khong nhan duoc request tu client thi readfds khong con chua master_socket nua
     if ((activity < 0) && (errno != EINTR)) {
       printf("select error");
     }
-    // if(activity==0)
-    // return 0;
-    // break;
-    // If something happened on the master socket ,
-    // then its an incoming connection
-    if (FD_ISSET(master_socket, &readfds)) {
+     if(activity==0)
+    {
+      break;
+    }
+    activity=0;
+    //  if (FD_ISSET(master_socket, &readfds)==0)
+    //  {
+    //    activity=0;
+    //  } 
+    if (FD_ISSET(master_socket, &readfds)) 
+    {
       if ((new_socket = accept(master_socket, (struct sockaddr *)&address,
                                (socklen_t *)&addrlen)) < 0)
 
@@ -112,15 +114,21 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
       }
       ChatWithClient(new_socket,address);
+      //FD_ZERO(&readfds);
       // add new socket to array of sockets
+     // FD_CLR(master_socket,&readfds);
+      
       for (i = 0; i < max_clients; i++) {
         // if position is empty
         if (client_socket[i] == 0) {
           client_socket[i] = new_socket;
           break;
         }
+
       }
+     // activity=99999;
     }
+    
   }
 
   return 0;
