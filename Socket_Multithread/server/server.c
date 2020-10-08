@@ -17,31 +17,34 @@
 #define FALSE  0  
 #define PORT 8888  
 #define MAX 100
-pthread_mutex_t lock;
-// char Rx_buffer[1025];  //data buffer of 1K  
-// char Tx_buffer[1025];
+//pthread_mutex_t lock;
 struct sockaddr_in address;   
+struct timeval timeout;
+int cout = 0;
 void *mythread (void *arg)
 {
     //struct sockaddr_in address; 
     int newarg = *(int*)(arg);
+    struct sockaddr_in temp;
+    temp = address;
     //pthread_mutex_lock(&lock);
-    printf("New connection , socket fd is %d , ip is : %s , port : %d   \n" , newarg , inet_ntoa(address.sin_addr) , ntohs 
-                  (address.sin_port)); 
+    printf("New connection, socket fd is %d , ip is : %s , port : %d   \n" , newarg , inet_ntoa(temp.sin_addr) , ntohs 
+                  (temp.sin_port)); 
     char buff[MAX]; 
 	int n; 
 	for (;;) 
     { 
 		bzero(buff, sizeof(buff)); 
         read(newarg, buff, sizeof(buff)); 
-        printf("From Client : %s", buff); 
+        printf("From Client ip is : %s , port : %d  : %s",inet_ntoa(temp.sin_addr) , ntohs (temp.sin_port), buff); 
 		if ((strncmp(buff, "exit", 4)) == 0) 
         { 
 			printf("Client Exit...\n");
+            cout--;
             close(newarg); 
 			break; 
 		}
-		printf("Enter the string : "); 
+		printf("Enter the string for Client ip is : %s , port : %d : ",inet_ntoa(temp.sin_addr) , ntohs (temp.sin_port)); 
 		n = 0; 
 		while ((buff[n++] = getchar()) != '\n'); 
 		write(newarg, buff, sizeof(buff)); 
@@ -52,6 +55,7 @@ void *mythread (void *arg)
 int main(int argc , char *argv[])   
 {   
     int opt = TRUE;   
+    int escape = 1;
     int master_socket , addrlen , new_socket , client_socket[30] ,  
           max_clients = 30 , activity, i , valread , sd;   
     int max_sd;   
@@ -110,41 +114,49 @@ int main(int argc , char *argv[])
          
     while(TRUE)   
     {   
+        timeout.tv_sec = 10;
         //clear the socket set  
         FD_ZERO(&readfds);   
-     
         //add master socket to set  
         FD_SET(master_socket, &readfds);   
         max_sd = master_socket;   
              
-        //add child sockets to set  
-        for ( i = 0 ; i < max_clients ; i++)   
-        {   
-            //socket descriptor  
-            sd = client_socket[i];   
-                 
-            //if valid socket descriptor then add to read list  
-            if(sd > 0)   
+        //add child sockets to set
+        if(cout != 0 || escape != 0)
+        {
+            for ( i = 0 ; i < max_clients ; i++)   
+            {   
+                //socket descriptor  
+                sd = client_socket[i];   
+
+                //if valid socket descriptor then add to read list  
+                if(sd > 0)   
                 FD_SET( sd , &readfds);   
                  
-            //highest file descriptor number, need it for the select function  
-            if(sd > max_sd)   
+                //highest file descriptor number, need it for the select function  
+                if(sd > max_sd)   
                 max_sd = sd;   
-        }   
+            } 
+        }  
+  
      
         //wait for an activity on one of the sockets , timeout is NULL ,  
         //so wait indefinitely  
-        activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);   //block chuong trinh tai day de doi
-       
+        activity = select( max_sd + 1 , &readfds , NULL , NULL , &timeout);   //block chuong trinh tai day de doi
+        if (activity == 0 && cout==0 && escape==0)
+        {
+            close(master_socket);
+            break;
+        }     
         if ((activity < 0) && (errno!=EINTR))   
         {   
             printf("select error");   
         }   
-             
+  
        //If something happened on the master socket ,  
         //then its an incoming connection  
-        if (FD_ISSET(master_socket, &readfds))   
-        {   
+        if (FD_ISSET(master_socket, &readfds)) // check lai master co mat trong readfds hay khong    
+        {  
             if ((new_socket = accept(master_socket,  
                     (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)   
             {   
@@ -162,12 +174,13 @@ int main(int argc , char *argv[])
                 {   
                     client_socket[i] = new_socket;   
                     pthread_create(&pt[i],NULL,mythread,&new_socket);
+                    cout++;
+                    escape = 0;
                     printf("Adding to list of sockets as %d\n" , i);   
                     break;   
                 }   
             }   
         }      
-    }   
-         
+    }      
     return 0;   
 }   
