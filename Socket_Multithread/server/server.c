@@ -21,6 +21,7 @@
 struct sockaddr_in address;   
 struct timeval timeout;
 int cout = 0;
+int  client_socket[30];
 void *mythread (void *arg)
 {
     //struct sockaddr_in address; 
@@ -28,27 +29,49 @@ void *mythread (void *arg)
     struct sockaddr_in temp;
     temp = address;
     //pthread_mutex_lock(&lock);
-    printf("New connection, socket fd is %d , ip is : %s , port : %d   \n" , newarg , inet_ntoa(temp.sin_addr) , ntohs 
-                  (temp.sin_port)); 
+    //printf("New connection, socket fd is %d , ip is : %s , port : %d   \n" , newarg , inet_ntoa(temp.sin_addr) , ntohs 
+      //            (temp.sin_port)); 
     char buff[MAX]; 
+    char buff_T[MAX];
 	int n; 
 	for (;;) 
     { 
 		bzero(buff, sizeof(buff)); 
         read(newarg, buff, sizeof(buff)); 
-        printf("From Client ip is : %s , port : %d  : %s",inet_ntoa(temp.sin_addr) , ntohs (temp.sin_port), buff); 
-		if ((strncmp(buff, "exit", 4)) == 0) 
+        // printf("From Client ip is : %s , port : %d  : %s",inet_ntoa(temp.sin_addr) , ntohs (temp.sin_port), buff); 
+		//printf("Enter the string for Client ip is : %s , port : %d : ",inet_ntoa(temp.sin_addr) , ntohs (temp.sin_port)); 
+        //buff_T = inet_ntoa(temp.sin_addr);
+        strcpy(buff_T,"Ip ");
+        strcat(buff_T,inet_ntoa(temp.sin_addr));
+        strcat(buff_T,":");
+        strcat(buff_T,buff);
+        for(int i=0; i<30; i++)
+        {
+            if(client_socket[i] == 0)
+            break;
+            write(client_socket[i], buff_T, sizeof(buff_T)); 
+        }
+        if ((strncmp(buff, "exit", 4)) == 0) 
         { 
 			printf("Client Exit...\n");
             cout--;
+            for(int i=0; i<30;i++)
+            {
+                if(client_socket[i]==newarg)
+                {
+                    for(int j=i;j<30;j++)
+                    {
+                        int a;
+                        a= j+1;
+                        client_socket[j] = client_socket[a];
+                    }
+                    break;
+                }
+            }
             close(newarg); 
 			break; 
 		}
-		printf("Enter the string for Client ip is : %s , port : %d : ",inet_ntoa(temp.sin_addr) , ntohs (temp.sin_port)); 
-		n = 0; 
-		while ((buff[n++] = getchar()) != '\n'); 
-		write(newarg, buff, sizeof(buff)); 
-		bzero(buff, sizeof(buff)); 
+		bzero(buff, sizeof(buff_T)); 
 	}    
 }
      
@@ -56,7 +79,7 @@ int main(int argc , char *argv[])
 {   
     int opt = TRUE;   
     int escape = 1;
-    int master_socket , addrlen , new_socket , client_socket[30] ,  
+    int master_socket , addrlen , new_socket ,  
           max_clients = 30 , activity, i , valread , sd;   
     int max_sd;   
     pthread_t pt[30];         
