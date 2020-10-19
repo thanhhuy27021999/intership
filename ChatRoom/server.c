@@ -29,10 +29,10 @@ void *RecvMess(void *server_sock){
 	int len;
 	while((len = recv(sock,msg,500,0)) > 0) {
 		msg[len] = '\0';
-        if(msg[strlen(msg+1)]=='t'&& msg[strlen(msg+2)]=='i'&& msg[strlen(msg+3)]=='x'&& msg[strlen(msg+4)]=='e')
+        if(msg[strlen(msg-1)]=='t'&& msg[strlen(msg-2)]=='i'&& msg[strlen(msg-3)]=='x'&& msg[strlen(msg-4)]=='e')
         number_connect -=1;
 		BroadcastMess(msg,sock);
-         printf("xxxxxxx : %d\n",number_connect);
+        // printf("xxxxxxx : %d\n",number_connect);
         //BroadcastMess(msg);
 
 	}
