@@ -13,3 +13,15 @@ void func(int sockfd);
 void *My_thread(void *arg); 
 void *End_user (void *arg); //thread1
 void *Admin_th (void *arg); //thread2
+class DataStruct
+{
+    private:
+        char Name[];
+        int ID ;
+        int lagi, longi;
+    public:
+        void SetName(char *arg);
+        void SetID (int *arg);
+        void SetCoordinate ();
+        void Xuat();
+};
