@@ -23,6 +23,26 @@
 				"isDefault": true
 			},
 			"detail": "compiler: /usr/bin/g++"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++: g++ build active file",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-g",
+				"${workspaceFolder}/*.cpp",
+				"-o",
+				"${fileDirname}/${fileBasenameNoExtension}",
+				"-lpthread"
+			],
+			"options": {
+				"cwd": "/usr/bin"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: /usr/bin/g++"
 		}
 	]
 }

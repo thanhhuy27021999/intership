@@ -6,7 +6,7 @@
 #include <string.h> 
 #include<pthread.h> 
 #define MAX 100
-#define PORT 8888
+#define PORT 12345
 using namespace std;
 char CHECK[MAX];
 

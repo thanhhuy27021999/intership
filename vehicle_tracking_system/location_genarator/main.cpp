@@ -5,6 +5,7 @@
 #include <unistd.h> 
 #include <string.h> 
 #include "Define_loca.h"
+#include <pthread.h>
 using namespace std;
 
 int main()

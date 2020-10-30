@@ -11,19 +11,32 @@ using namespace std;
 
                     /* Send data from sensor to VTS for user */
                     
-void *Add_user(void *arg)
+void *Add_Sensor(void *arg)
 {
+    int flag = *((int*)(arg));
+    int a;
+    char name[]= "123";
     //DataSensor DataSensor1;
+    cout << "welcom to ss1" <<"\n";
     int sock;
     sock = ConnectToVts();
     DataStruct DataSensor1;
-    write(sock,&DataSensor1,sizeof(DataSensor1));
+    while(flag == 0)
+    {
+        DataSensor1.SetID(&a);
+        DataSensor1.SetName(name);
+        DataSensor1.SetCoordinate();
+        write(sock,&DataSensor1,sizeof(DataSensor1));
+    }
+
+    close(sock);
 }
 
             /*Define function for class DataStruct*/
 
 void DataStruct::SetCoordinate()
 {
+    srand((int)time(0));
     longi = rand();
     lagi = rand();
 }   
@@ -40,11 +53,11 @@ void DataStruct::SetName(char *arg)
 
                     /*create a thread for sensor*/
 
-pthread_t newthread (pthread_t *arg1)
-{
-    pthread_create(arg1,NULL,Add_user,NULL);
-    return (*arg1);
-}
+// pthread_t newthread (pthread_t *arg1)
+// {
+//     pthread_create(arg1,NULL,Add_user,NULL);
+//     return (*arg1);
+// }
 
 
 
@@ -52,6 +65,7 @@ pthread_t newthread (pthread_t *arg1)
 
 void *Recv_from_ad (void *arg)
 {
+    static int flag;
     pthread_t sensor1_thread;
     char buffer[100];
     sockaddr_in server_addr;
@@ -72,7 +86,7 @@ void *Recv_from_ad (void *arg)
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    server_addr.sin_port = htons(PORT_1);
     
     if(bind(listenfd,(sockaddr*)&server_addr, sizeof(server_addr)) <0)
     {
@@ -82,10 +96,21 @@ void *Recv_from_ad (void *arg)
     //NOTE: in server you must bind the Ip add for it, in client you just connect to server by server add
     listen(listenfd,3); // waiting for connection maximum 3 geue
     newsocket = accept(listenfd,(sockaddr*) &server_addr,(socklen_t*)&addr_lenght);
-    read(newsocket,&buffer,sizeof(buffer));
-    if (strcmp(buffer,"open1"))
+    while(1)
     {
-        newthread(&sensor1_thread);
+        read(newsocket,&buffer,sizeof(buffer));
+        if (strcmp(buffer,"open1"))
+        {
+            flag = false;
+            //newthread(&sensor1_thread);
+            pthread_create(&sensor1_thread,NULL,Add_Sensor,&flag);
+        }
+        if (strcmp(buffer,"close1"))
+        {
+            flag = true;
+        }
+
+        //pthread_join (sensor1_thread,NULL);
     }
 }
 
@@ -105,7 +130,7 @@ int ConnectToVts()
         return 0; 
     } 
     serv_addr.sin_family = AF_INET; // truong dia chi, client khoi tao dia chi cho cua server de connect toi
-    serv_addr.sin_port = htons(PORT);
+    serv_addr.sin_port = htons(PORT_2);
 
     // connect to server
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 

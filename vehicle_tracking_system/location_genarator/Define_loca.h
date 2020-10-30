@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <iostream>
 #include <pthread.h> 
-#define     PORT    8888
+#define     PORT_1    12346
+#define     PORT_2    12347
+#define     TRUE      1
+#define     FALSE     0
 void *Recv_from_ad (void *arg); //recieve request from VTS as a server 
-void *Add_user(void *arg); //create a connection from local_genarator to VTS as a client
+void *Add_Sensor(void *arg); //create a connection from local_genarator to VTS as a client
 int ConnectToVts(); //sensor send data to VTS
 pthread_t newthread (pthread_t *arg1); // creat a thread for a sensor
 class DataStruct
 {
     private:
-        char Name[];
+        char Name[20];
         int ID ;
         int lagi, longi;
     public:
