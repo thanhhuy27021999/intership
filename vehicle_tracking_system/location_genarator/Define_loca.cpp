@@ -13,7 +13,6 @@ using namespace std;
                     
 void *Add_Sensor(void *arg)
 {
-    int flag = *((int*)(arg));
     int a;
     char name[]= "123";
     //DataSensor DataSensor1;
@@ -65,7 +64,6 @@ void DataStruct::SetName(char *arg)
 
 void *Recv_from_ad (void *arg)
 {
-    static int flag;
     pthread_t sensor1_thread;
     char buffer[100];
     sockaddr_in server_addr;

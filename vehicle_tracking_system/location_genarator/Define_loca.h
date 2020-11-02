@@ -5,6 +5,7 @@
 #define     PORT_2    12347
 #define     TRUE      1
 #define     FALSE     0
+static int flag;
 void *Recv_from_ad (void *arg); //recieve request from VTS as a server 
 void *Add_Sensor(void *arg); //create a connection from local_genarator to VTS as a client
 int ConnectToVts(); //sensor send data to VTS

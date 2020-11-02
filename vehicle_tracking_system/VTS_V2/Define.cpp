@@ -75,7 +75,7 @@ void *My_thread_1 (void *arg)
     { 
 		bzero(&buff, sizeof(buff)); 
         read(newarg, &buff, sizeof(buff)); 
-        //buff.Xuat();
+        buff.Xuat();
         //write(newarg, &buff, sizeof(buff_T)); //tranfer data 
         // strcpy(buff_T,"Ip ");
         // strcat(buff_T,inet_ntoa(temp.sin_addr));
