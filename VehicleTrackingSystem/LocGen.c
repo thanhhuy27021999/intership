@@ -7,12 +7,14 @@
 #include <sys/socket.h>
 #include <time.h>
 #include <unistd.h>
-
+#include <ctype.h>
 #define PORT 7473
 
 int sensors_list[3];
 struct sockaddr_in serv_addr;
-pthread_t sensor;
+pthread_t sensor[5];
+int check[5];
+int tmp;
 struct SensorData {
   // char name[100];
   int x1, x2, y1, y2;
@@ -52,7 +54,8 @@ void *SendCoords(void *arg) {
   ptr = SerializeCoord(buff, coord1);
 
   int i = 0;
-  while (1) {
+  while (1) 
+  {
     delay(3000);
 
     if (i == 0) {
@@ -61,7 +64,10 @@ void *SendCoords(void *arg) {
     }
 
     // write(sock, buff, sizeof(coord));
+
     send(sock, buff, ptr - buff, 0);
+    if(check[tmp]==0)
+    break;
   }
 
   pthread_exit(NULL);
@@ -69,7 +75,10 @@ void *SendCoords(void *arg) {
 
 int main(int argc, char const *argv[]) {
   int sock = 0, valread;
-
+for(int i=0;i<5;i++)
+{
+  check[i]=0;
+}
   char buffer[1024] = {0};
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     printf("\n Socket creation error \n");
@@ -92,14 +101,38 @@ int main(int argc, char const *argv[]) {
   char buff[100];
 
   int n;
+  int i=0;
   for (;;) {
     bzero(buff, sizeof(buff));
     read(sock, buff, sizeof(buff));
     printf("From VTS : %s", buff);
-    if ((strncmp("AddSensor", buff, 9)) == 0) {
-
-      pthread_create(&sensor, NULL, (void *)SendCoords, &sock);
+   // if ((strncmp("add", buff,3)) == 0)
+    if(buff[0]=='x'&& buff[1]=='o'&&buff[2]=='a'&& isdigit(buff[3]))
+     {
+      tmp = buff[3] - '0';
+      check[tmp]=0;
+     // if(check[tmp]==1)
+     // pthread_create(&sensor[i++], NULL, (void *)SendCoords, &sock);
     }
+      if(buff[0]=='a'&& buff[1]=='d'&&buff[2]=='d'&& isdigit(buff[3]))
+     {
+      tmp = buff[3] - '0';
+      check[tmp]=1;
+     // if(check[tmp]==1)
+     // pthread_create(&sensor[i++], NULL, (void *)SendCoords, &sock);
+    }
+    if(check[tmp]==1)
+  // for(int i=0;i<=tmp;i++)
+  // {
+  //   if(check[i]==1)
+  // }
+  //   for(int i=0;i<=5;i++)
+  //   {
+  //     if(check[i]==1)
+       pthread_create(&sensor[tmp], NULL, (void *)SendCoords, &sock);
+  
+   
+      
   }
   return 0;
 }

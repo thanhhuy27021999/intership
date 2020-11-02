@@ -33,8 +33,7 @@ void *conectLocGen(void *sockarg) {
     }
   }
 }
-int DeserializeInt( char *buffer) 
-{
+int DeserializeInt(char *buffer) {
   int value = 0;
 
   value |= buffer[0] << 24;
@@ -47,24 +46,28 @@ int DeserializeInt( char *buffer)
 void *RecvMess(void *server_sock) {
   int sock = *((int *)server_sock);
   char msg[500];
+  //char msg_name[500];
   int len;
+  int i = 0;
+  //recv(sock, msg_name, 500, 0);
+  //printf("%s",msg_name);
   while ((len = recv(sock, msg, 500, 0)) > 0) {
-      int x1,x2,y1,y2;
-       x1 = DeserializeInt(msg);
-        x2 = DeserializeInt(msg+4);
-         y1 = DeserializeInt(msg+8);
-          y2 = DeserializeInt(msg+12);
-   // msg[len] = '\0';
-    printf("(X1: %d,", x1);
-    printf("X2: %d,", x2);
-    printf("Y1: %d,", y1);
-    printf("Y2: %d)\n", y2);
+    int x1, x2, y1, y2;
+    x1 = DeserializeInt(msg);
+    x2 = DeserializeInt(msg + 4);
+    y1 = DeserializeInt(msg + 8);
+    y2 = DeserializeInt(msg + 12);
+    // msg[len] = '\0';
+    printf("(X1:%d ,", x1);
+    printf(" X2:%d ,", x2);
+    printf(" Y1:%d ,", y1);
+    printf(" Y2:%d)\n", y2);
   }
 }
 
 int main() {
   struct sockaddr_in address;
-  pthread_t recvt,connecLoc;
+  pthread_t recvt, connecLoc;
   int server_sock = 0;
   int max_sd, activity, new_socket;
   fd_set readfds;
@@ -96,12 +99,12 @@ int main() {
       else
         number_connect++;
 
-     // conectLocGen(new_socket);
+      // conectLocGen(new_socket);
       pthread_create(&connecLoc, NULL, (void *)conectLocGen, &new_socket);
       pthread_mutex_lock(&mutex);
       clients_list[n] = new_socket;
       n++;
-      // creating a thread for each client
+      
       pthread_create(&recvt, NULL, (void *)RecvMess, &new_socket);
       pthread_mutex_unlock(&mutex);
     }
