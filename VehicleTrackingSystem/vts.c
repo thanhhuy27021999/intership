@@ -15,8 +15,7 @@
 pthread_mutex_t mutex;
 int clients_list[20];
 int n = 0;
-int number_exit = 0, number_connect = 0;
-////
+
 void *conectLocGen(void *sockarg) {
   int sockfd = *((int *)sockarg);
   char buff[100];
@@ -46,18 +45,17 @@ int DeserializeInt(char *buffer) {
 void *RecvMess(void *server_sock) {
   int sock = *((int *)server_sock);
   char msg[500];
-  //char msg_name[500];
   int len;
   int i = 0;
-  //recv(sock, msg_name, 500, 0);
-  //printf("%s",msg_name);
   while ((len = recv(sock, msg, 500, 0)) > 0) {
-    int x1, x2, y1, y2;
-    x1 = DeserializeInt(msg);
-    x2 = DeserializeInt(msg + 4);
-    y1 = DeserializeInt(msg + 8);
-    y2 = DeserializeInt(msg + 12);
-    // msg[len] = '\0';
+    int SensorId,x1, x2, y1, y2;
+    
+    SensorId = DeserializeInt(msg);
+    x1 = DeserializeInt(msg + 4);
+    x2 = DeserializeInt(msg + 8);
+    y1 = DeserializeInt(msg + 12);
+    y2 = DeserializeInt(msg+16);
+    printf("Sensor %d  ",SensorId);
     printf("(X1:%d ,", x1);
     printf(" X2:%d ,", x2);
     printf(" Y1:%d ,", y1);
@@ -90,16 +88,11 @@ int main() {
     // server khong nhan duoc request tu client thi readfds khong con chua
     // master_socket nua
 
-    if (activity == 0 && number_connect == 0) {
-      break;
-    }
+   
     if (FD_ISSET(server_sock, &readfds)) {
       if ((new_socket = accept(server_sock, (struct sockaddr *)NULL, NULL)) < 0)
         printf("accept failed n");
-      else
-        number_connect++;
 
-      // conectLocGen(new_socket);
       pthread_create(&connecLoc, NULL, (void *)conectLocGen, &new_socket);
       pthread_mutex_lock(&mutex);
       clients_list[n] = new_socket;
