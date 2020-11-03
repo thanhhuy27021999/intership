@@ -75,7 +75,7 @@ void *SendSensorData(void *arg) {
     if ((strncmp(buffC, "sensor", 6)) == 0) 
     
     {
-    printf("Send message to CLI User : ");
+    printf("Send message to CLI User\n");
     send(serverSocket, msg, sizeof(msg), 0);
     }
     

@@ -25,10 +25,20 @@ void RecvMess(int sock) {
   int i = 0;
   char buff[100];
   int n=0;
-  while ((buff[n++] = getchar()) != '\n') 
-            ; 
-        write(sock, buff, sizeof(buff)); 
-  while ((len = recv(sock, msg, 500, 0)) > 0) {
+ 
+
+ // while ((len = recv(sock, msg, 500, 0)) > 0) 
+  for (;;) 
+  {
+       while ((buff[n++] = getchar()) != '\n') ; 
+       
+    
+       if ((strncmp(buff, "exit", 4)) == 0) 
+     { 
+          break; 
+     }
+    write(sock, buff, sizeof(buff));
+     recv(sock, msg, 500, 0);
     int SensorId, x1, x2, y1, y2;
 
     SensorId = DeserializeInt(msg);
