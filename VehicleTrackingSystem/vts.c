@@ -1,5 +1,3 @@
-
-
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/in.h>
@@ -18,6 +16,8 @@ int clients_list[20];
 int n = 0;
 char msg[500];
 int len;
+FILE *XML_file;
+
 void *conectLocGen(void *sockarg) {
   int sockfd = *((int *)sockarg);
   char buff[100];
@@ -46,9 +46,11 @@ int DeserializeInt(char *buffer) {
 // Recv coords from each Sensor
 void *RecvMess(void *server_sock) {
   int sock = *((int *)server_sock);
-  
+  XML_file = fopen("VTS_XML.xml", "w");
+  fprintf (XML_file,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
   int i = 0;
-  while ((len = recv(sock, msg, 500, 0)) > 0) {
+  while ((len = recv(sock, msg, 500, 0)) > 0) 
+  {
     int SensorId, x1, x2, y1, y2;
 
     SensorId = DeserializeInt(msg);
@@ -61,6 +63,15 @@ void *RecvMess(void *server_sock) {
     printf(" X2:%d ,", x2);
     printf(" Y1:%d ,", y1);
     printf(" Y2:%d)\n", y2);
+    fprintf(XML_file,"<Sensor%d>\n", SensorId);
+    fprintf(XML_file, "<Location>\n");
+    fprintf(XML_file, "<X1>%d</X1>\n", x1);
+    fprintf(XML_file, "<X2>%d</X2>\n", x2);
+    fprintf(XML_file, "<Y1>%d</Y1>\n", y1);
+    fprintf(XML_file, "<Y2>%d</Y2>\n", y2);
+    fprintf(XML_file, "</Location>\n");
+    fprintf(XML_file, "</Sensor%d>\n", SensorId);
+    ////////
   }
 }
 ////// Connect to CLI user
@@ -71,21 +82,20 @@ void *SendSensorData(void *arg) {
   char buffS[MAX];
   int n;
   for (;;) {
+    bzero(buffC, sizeof(buffC));
     read(serverSocket, buffC, sizeof(buffC));
-    if ((strncmp(buffC, "sensor", 6)) == 0) 
-    
+    if ((strncmp(buffC, "sensor", 6)) == 0)
+
     {
-    printf("Send message to CLI User\n");
-    send(serverSocket, msg, sizeof(msg), 0);
+      printf("Send message to CLI User\n");
+      send(serverSocket, msg, sizeof(msg), 0);
     }
-    
   }
 }
 
-void *ConnectCLI(void* arg) 
-{
+void *ConnectCLI(void *arg) {
   int master_socket1, addrlen1, new_socket1, client_socket1[30];
-  int max_clients1 = 30,  valread1, sd1;
+  int max_clients1 = 30, valread1, sd1;
   int max_sd1;
   struct sockaddr_in address1;
   struct timeval time_out;
@@ -107,7 +117,8 @@ void *ConnectCLI(void* arg)
   address1.sin_addr.s_addr = INADDR_ANY;
   address1.sin_port = htons(8888);
 
-  if (bind(master_socket1, (struct sockaddr *)&address1, sizeof(address1)) < 0) {
+  if (bind(master_socket1, (struct sockaddr *)&address1, sizeof(address1)) <
+      0) {
     perror("bind failed");
     exit(EXIT_FAILURE);
   }
@@ -122,7 +133,7 @@ void *ConnectCLI(void* arg)
   int i = 0;
   while (1) {
     new_socket1 = accept(master_socket1, (struct sockaddr *)&address1,
-                        (socklen_t *)&addrlen1);
+                         (socklen_t *)&addrlen1);
     pthread_create(&tid[i++], NULL, SendSensorData, &new_socket1);
     if (i >= 3) {
       i = 0;
@@ -136,12 +147,12 @@ void *ConnectCLI(void* arg)
 
 ///////////////////////////
 
-int main()
- {
-  pthread_t recvt, connecLoc,connecCLIUser;
-   pthread_create(&connecCLIUser,NULL,&ConnectCLI,NULL);
+int main() {
+
+  pthread_t recvt, connecLoc, connecCLIUser;
+  pthread_create(&connecCLIUser, NULL, &ConnectCLI, NULL);
   struct sockaddr_in address;
-  
+
   int server_sock = 0;
   int max_sd, activity, new_socket;
   fd_set readfds;
@@ -177,11 +188,6 @@ int main()
       pthread_mutex_unlock(&mutex);
     }
   }
-  
+
   return 0;
 }
-
-
-
-
-
