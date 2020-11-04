@@ -46,7 +46,7 @@ int main()
     memset(&serv_addr,0,sizeof(serv_addr));
     sock = socket(AF_INET,SOCK_STREAM, 0);
     // bind the add to socket
-    if(inet_pton(AF_INET, "192.168.83.10", &serv_addr.sin_addr)<=0)  
+    if(inet_pton(AF_INET, "192.168.1.6", &serv_addr.sin_addr)<=0)  
     { 
         cout<<"\nInvalid address/ Address not supported \n"; 
         return -1; 

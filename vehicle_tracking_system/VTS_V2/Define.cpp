@@ -8,7 +8,7 @@
 #include "Define.h"
 int cnt;
 int escape;
-int  client_socket[30];
+int client_socket[30];
 struct sockaddr_in address;   
 struct timeval timeout;
 using namespace std;
@@ -22,7 +22,7 @@ void *Admin_th (void *arg)
     memset(&serv_addr,0,sizeof(serv_addr));
     sock = socket(AF_INET,SOCK_STREAM, 0);
     // bind the add to socket
-    if(inet_pton(AF_INET, "192.168.83.10", &serv_addr.sin_addr) <= 0)  
+    if(inet_pton(AF_INET, "192.168.1.6", &serv_addr.sin_addr) <= 0)  
     { 
         cout<<"\nInvalid address/ Address not supported \n"; 
         return 0; 
@@ -54,11 +54,11 @@ void func(int sockfd)
 		n = 0; 
 		while ((buff[n++] = getchar()) != '\n'); 
 		write(sockfd, buff, sizeof(buff)); 
-        if ((strncmp(buff, "exit", 4)) == 0) 
+        if ((strncmp(buff, "close1", 6)) == 0) 
         { 
             //strcpy(CHECK,buff);
 			printf("Admin Exit...\n"); 
-			break; 
+			//break; 
 		}  
 	} 
 } 
@@ -69,45 +69,35 @@ void *My_thread_1 (void *arg)
     struct sockaddr_in temp;
     temp = address;
     DataStruct buff; 
+    char *message  = "OKE";
     //char buff_T[MAX];
 	int n; 
 	for (;;) 
     { 
 		bzero(&buff, sizeof(buff)); 
         read(newarg, &buff, sizeof(buff)); 
-        buff.Xuat();
-        //write(newarg, &buff, sizeof(buff_T)); //tranfer data 
-        // strcpy(buff_T,"Ip ");
-        // strcat(buff_T,inet_ntoa(temp.sin_addr));
-        // strcat(buff_T,":");
-        // strcat(buff_T,buff);
-        // for(int i=0; i<30; i++)
-        // {
-        //     if(client_socket[i] == 0)
-        //     break;
-        //     write(client_socket[i], buff_T, sizeof(buff_T)); 
-        // }
-        //write(newarg,buff,sizeof(buff));
-        // if ((strncmp(buff, "exit", 4)) == 0) 
-        // { 
-		// 	printf("Client Exit...\n");
-        //     cnt--;
-        //     for(int i=0; i<30;i++)
-        //     {
-        //         if(client_socket[i]==newarg)
-        //         {
-        //             for(int j=i;j<30;j++)
-        //             {
-        //                 int a;
-        //                 a= j+1;
-        //                 client_socket[j] = client_socket[a];
-        //             }
-        //             break;
-        //         }
-        //     }
-        //     close(newarg); 
-		// 	break; 
-		// }
+        if(!strncmp(buff.status, "exit",sizeof("exit")-1))
+        {
+            cout <<"Da exit"<<buff.status<<"\n";
+            cnt--;
+            for(int i=0; i<30;i++)
+            {
+                 if(client_socket[i]==newarg)
+                 {
+                     for(int j=i;j<30;j++)
+                     {
+                         int a;
+                         a= j+1;
+                         client_socket[j] = client_socket[a];
+                     }
+                     break;
+                 }
+             }
+             close(newarg); 
+		 	break;         
+        }
+       // buff.Xuat();
+        write(newarg,message,sizeof(message));
 		bzero(&buff, sizeof(buff)); 
 	}  
 }
@@ -143,13 +133,13 @@ void *My_thread (void *arg)
             cnt--;
             for(int i=0; i<30;i++)
             {
-                if(client_socket[i]==newarg)
+                if(client_socket_client[i]==newarg)
                 {
                     for(int j=i;j<30;j++)
                     {
                         int a;
                         a= j+1;
-                        client_socket[j] = client_socket[a];
+                        client_socket_client[j] = client_socket_client[a];
                     }
                     break;
                 }
@@ -164,8 +154,8 @@ void *My_thread (void *arg)
 
 void *End_user (void *arg)
 {
-    escape = 1;
-    cnt = 0;
+    escape_client = 1;
+    cnt_Client = 0;
     int opt = TRUE;   
     int master_socket , addrlen , new_socket ,  
     max_clients = 30 , activity, i , valread , sd;   
@@ -180,7 +170,7 @@ void *End_user (void *arg)
     //initialise all client_socket[] to 0 so not checked  
     for (i = 0; i < max_clients; i++)   
     {   
-        client_socket[i] = 0;   
+        client_socket_client[i] = 0;   
     }   
          
     //create a master socket  
@@ -238,7 +228,7 @@ void *End_user (void *arg)
             for ( i = 0 ; i < max_clients ; i++)   
             {   
                 //socket descriptor  
-                sd = client_socket[i];   
+                sd = client_socket_client[i];   
 
                 //if valid socket descriptor then add to read list  
                 if(sd > 0)   
@@ -281,7 +271,7 @@ void *End_user (void *arg)
             for (i = 0; i < max_clients; i++)   
             {   
                 //if position is empty  
-                if( client_socket[i] == 0 )   
+                if( client_socket_client[i] == 0 )   
                 {   
                     client_socket[i] = new_socket;   
                     pthread_create(&pt[i],NULL,My_thread,&new_socket);
@@ -309,7 +299,7 @@ void *End_user_1 (void *arg)
     fd_set readfds;   
          
     //a message  
-    char *message = "ECHO Daemon v1.0 \r\n";   
+    //char *message = "ECHO Daemon v1.0 \r\n";   
      
     //initialise all client_socket[] to 0 so not checked  
     for (i = 0; i < max_clients; i++)   
@@ -389,7 +379,7 @@ void *End_user_1 (void *arg)
         //so wait indefinitely  
         activity = select( max_sd + 1 , &readfds , NULL , NULL , &timeout);   //block chuong trinh tai day de doi
         if (activity == 0 && cnt==0 && escape==0)
-        {
+        { 
             close(master_socket);
             break;
         }     
@@ -447,10 +437,15 @@ void DataStruct::SetName(char *arg)
 {
     strcpy(Name,"Huy");
 }
+void DataStruct::SetStatus(char*arg)
+{
+    strcpy(status,arg);
+}
 
 void DataStruct:: Xuat() 
 {
     cout << "Name: " << Name <<"\n";
+    cout <<"Status: " <<status <<"\n";
     cout << "ID: " <<ID <<"\n";
     cout << "Longi: "<<longi <<"\n";
     cout << "Langi: "<<lagi<<"\n";
