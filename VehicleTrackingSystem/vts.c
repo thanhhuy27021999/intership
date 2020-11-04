@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h> //close
 #define MAX 1024
 pthread_mutex_t mutex;
@@ -47,12 +48,16 @@ int DeserializeInt(char *buffer) {
 void *RecvMess(void *server_sock) {
   int sock = *((int *)server_sock);
   XML_file = fopen("VTS_XML.xml", "w");
-  fprintf (XML_file,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+  fprintf(XML_file, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
   int i = 0;
-  while ((len = recv(sock, msg, 500, 0)) > 0) 
-  {
-    int SensorId, x1, x2, y1, y2;
 
+  while ((len = recv(sock, msg, 500, 0)) > 0) {
+    int SensorId, x1, x2, y1, y2;
+    time_t rawtime;
+    struct tm *timeinfo;
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
     SensorId = DeserializeInt(msg);
     x1 = DeserializeInt(msg + 4);
     x2 = DeserializeInt(msg + 8);
@@ -63,8 +68,9 @@ void *RecvMess(void *server_sock) {
     printf(" X2:%d ,", x2);
     printf(" Y1:%d ,", y1);
     printf(" Y2:%d)\n", y2);
-    fprintf(XML_file,"<Sensor%d>\n", SensorId);
+    fprintf(XML_file, "<Sensor%d>\n", SensorId);
     fprintf(XML_file, "<Location>\n");
+    fprintf(XML_file, "<Time>%s</Time>\n", asctime(timeinfo));
     fprintf(XML_file, "<X1>%d</X1>\n", x1);
     fprintf(XML_file, "<X2>%d</X2>\n", x2);
     fprintf(XML_file, "<Y1>%d</Y1>\n", y1);
@@ -191,3 +197,4 @@ int main() {
 
   return 0;
 }
+
