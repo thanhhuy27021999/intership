@@ -47,7 +47,7 @@ int DeserializeInt(char *buffer) {
 // Recv coords from each Sensor
 void *RecvMess(void *server_sock) {
   int sock = *((int *)server_sock);
-  XML_file = fopen("VTS_XML.xml", "w");
+ // XML_file = fopen("VTS_XML.xml", "w");
   fprintf(XML_file, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
   int i = 0;
 
@@ -90,7 +90,7 @@ void *SendSensorData(void *arg) {
   for (;;) {
     bzero(buffC, sizeof(buffC));
     read(serverSocket, buffC, sizeof(buffC));
-    if ((strncmp(buffC, "sensor", 6)) == 0)
+    if ((strncmp(buffC, "getdata", 7)) == 0)
 
     {
       printf("Send message to CLI User\n");
@@ -154,7 +154,7 @@ void *ConnectCLI(void *arg) {
 ///////////////////////////
 
 int main() {
-
+  XML_file = fopen("VTS_XML.xml", "w");
   pthread_t recvt, connecLoc, connecCLIUser;
   pthread_create(&connecCLIUser, NULL, &ConnectCLI, NULL);
   struct sockaddr_in address;
