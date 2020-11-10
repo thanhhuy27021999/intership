@@ -45,12 +45,13 @@ void delay(int number_of_seconds) {
 void *SendCoords(void *arg) {
   int sock = *((int *)arg);
   struct SensorData coord1;
-  XML_file = fopen("Loc_Gen_XML.xml", "w");
+ 
   fprintf(XML_file, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
   coord1.SensorId = Sensor_id;
 
   int i = 0;
   while (1) {
+    
     delay(6000);
     coord1.x1 = rand() % 100 + 1;
     coord1.x2 = rand() % 100 + 1;
@@ -76,6 +77,7 @@ void *SendCoords(void *arg) {
 }
 
 int main(int argc, char const *argv[]) {
+   XML_file = fopen("Loc_Gen_XML.xml", "w");
   int sock = 0, valread;
   for (int i = 0; i < 5; i++) {
     check[i] = 0;

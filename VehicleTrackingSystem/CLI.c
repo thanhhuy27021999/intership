@@ -7,7 +7,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
+#include <ctype.h>
 #define MAX 1024
 
 int DeserializeInt(char *buffer) {
@@ -21,7 +21,7 @@ int DeserializeInt(char *buffer) {
 }
 void RecvMess(int sock) {
   //  int sock = *((int *)server_sock);
-  char msg[500];
+  char msg[50000];
   int len;
   int i = 0;
   char buff[100];
@@ -35,13 +35,16 @@ void RecvMess(int sock) {
       ;
     if ((strncmp(buff, "exit", 4)) == 0)
       break;
-    if ((strncmp(buff, "getdata", 7)) == 0) {
+   // if ((strncmp(buff, "getdata", 7)) == 0) 
+    if (buff[0] == 'g' && buff[1] == 'e' && buff[2] == 't' &&
+        isdigit(buff[3]))
+    {
 
       write(sock, buff, sizeof(buff));
       // if ((strncmp(buff, "GetData", 7)) == 0)
-      recv(sock, msg, 500, 0);
+      recv(sock, msg, sizeof(msg), 0);
+      /*
       int SensorId, x1, x2, y1, y2;
-
       SensorId = DeserializeInt(msg);
       x1 = DeserializeInt(msg + 4);
       x2 = DeserializeInt(msg + 8);
@@ -52,6 +55,8 @@ void RecvMess(int sock) {
       printf(" X2:%d ,", x2);
       printf(" Y1:%d ,", y1);
       printf(" Y2:%d)\n", y2);
+      */
+     printf("%s",msg );
     }
   }
 }

@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <ctype.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <pthread.h>
@@ -15,19 +16,32 @@
 pthread_mutex_t mutex;
 int clients_list[20];
 int n = 0;
-char msg[500];
+char msg[20][50000];
+char tmp_msg[500];
 int len;
-FILE *XML_file;
+FILE *XML_file, *wtrieLogSensor;
 
 void *conectLocGen(void *sockarg) {
   int sockfd = *((int *)sockarg);
   char buff[100];
   int n;
+  wtrieLogSensor = fopen("WriteLog.xml", "w");
   for (;;) {
     bzero(buff, 100);
     n = 0;
     while ((buff[n++] = getchar()) != '\n')
       ;
+    if (buff[0] == 'a' && buff[1] == 'd' && buff[2] == 'd' &&isdigit(buff[3])) 
+    {
+      time_t rawtime;
+      struct tm *timeinfo;
+      time(&rawtime);
+      timeinfo = localtime(&rawtime);
+       fprintf(wtrieLogSensor, "<Sensor%d>\n",  buff[3] - '0');
+     //  printf("check");
+      fprintf(wtrieLogSensor, "<TimeConnect>%s</TimeConnect>\n",asctime(timeinfo));
+      fprintf(wtrieLogSensor, "</Sensor%d>\n",  buff[3] - '0');
+    }
     write(sockfd, buff, sizeof(buff));
     if (strncmp("exit", buff, 4) == 0) {
       printf("Exit...\n");
@@ -37,6 +51,7 @@ void *conectLocGen(void *sockarg) {
 }
 int DeserializeInt(char *buffer) {
   int value = 0;
+  
 
   value |= buffer[0] << 24;
   value |= buffer[1] << 16;
@@ -47,22 +62,46 @@ int DeserializeInt(char *buffer) {
 // Recv coords from each Sensor
 void *RecvMess(void *server_sock) {
   int sock = *((int *)server_sock);
- // XML_file = fopen("VTS_XML.xml", "w");
+  // XML_file = fopen("VTS_XML.xml", "w");
   fprintf(XML_file, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
   int i = 0;
 
-  while ((len = recv(sock, msg, 500, 0)) > 0) {
+  while ((len = recv(sock, tmp_msg, 500, 0)) > 0) {
     int SensorId, x1, x2, y1, y2;
+    /*
+     printf("tmp_msg : %s\n",tmp_msg);
+    int tmp_SensorId=DeserializeInt(tmp_msg);
+     printf("tmp_SensorId : %d\n",tmp_SensorId);
+    printf("tmp_msg1 : %s\n",tmp_msg);
+    strcpy(msg[tmp_SensorId],tmp_msg);
+    */
     time_t rawtime;
     struct tm *timeinfo;
-
     time(&rawtime);
     timeinfo = localtime(&rawtime);
-    SensorId = DeserializeInt(msg);
-    x1 = DeserializeInt(msg + 4);
-    x2 = DeserializeInt(msg + 8);
-    y1 = DeserializeInt(msg + 12);
-    y2 = DeserializeInt(msg + 16);
+    SensorId = DeserializeInt( tmp_msg);
+    x1 = DeserializeInt( tmp_msg+ 4);
+    x2 = DeserializeInt( tmp_msg + 8);
+    y1 = DeserializeInt( tmp_msg + 12);
+    y2 = DeserializeInt( tmp_msg + 16);
+    char id_tmp[10],X1[10],X2[10],Y1[10],Y2[10];
+   //itoa(SensorId,id,10);
+    sprintf(id_tmp, "%d", SensorId); 
+    sprintf(X1, "%d", x1); 
+    sprintf(X2, "%d", x2); 
+    sprintf(Y1, "%d", y1); 
+    sprintf(Y2, "%d", y2); 
+    strcat(msg[SensorId],"\nSensor ");
+    strcat(msg[SensorId],id_tmp);
+    strcat(msg[SensorId],"(X1: ");
+    strcat(msg[SensorId],X1);
+    strcat(msg[SensorId]," X2: ");
+    strcat(msg[SensorId],X2);
+    strcat(msg[SensorId]," Y1: ");
+    strcat(msg[SensorId],Y1);
+    strcat(msg[SensorId]," Y2 :");
+    strcat(msg[SensorId],Y2);
+    strcat(msg[SensorId],")\n");
     printf("Sensor %d  ", SensorId);
     printf("(X1:%d ,", x1);
     printf(" X2:%d ,", x2);
@@ -87,14 +126,17 @@ void *SendSensorData(void *arg) {
   char buffC[MAX];
   char buffS[MAX];
   int n;
+  int SensorIdMsg;
   for (;;) {
     bzero(buffC, sizeof(buffC));
     read(serverSocket, buffC, sizeof(buffC));
-    if ((strncmp(buffC, "getdata", 7)) == 0)
-
+    //if ((strncmp(buffC, "", 7)) == 0)
+     if (buffC[0] == 'g' && buffC[1] == 'e' && buffC[2] == 't' &&
+        isdigit(buffC[3])) 
     {
+      SensorIdMsg=buffC[3] - '0';
       printf("Send message to CLI User\n");
-      send(serverSocket, msg, sizeof(msg), 0);
+      send(serverSocket,  msg[SensorIdMsg], sizeof( msg[SensorIdMsg]), 0);
     }
   }
 }
@@ -155,6 +197,7 @@ void *ConnectCLI(void *arg) {
 
 int main() {
   XML_file = fopen("VTS_XML.xml", "w");
+ // wtrieLogSensor = fopen("WriteLog.xml", "w");
   pthread_t recvt, connecLoc, connecCLIUser;
   pthread_create(&connecCLIUser, NULL, &ConnectCLI, NULL);
   struct sockaddr_in address;
@@ -197,4 +240,3 @@ int main() {
 
   return 0;
 }
-
