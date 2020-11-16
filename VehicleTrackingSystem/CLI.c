@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <ctype.h>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <pthread.h>
@@ -7,9 +8,17 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <ctype.h>
 #define MAX 1024
-
+int CheckStringIsNumber(char *a) {
+  int c = 1;
+  for (int i = 0; i < strlen(a - 1); i++) {
+    if (isdigit(a[i]) == 0) {
+      c = 0;
+      break;
+    }
+  }
+  return c;
+}
 int DeserializeInt(char *buffer) {
   int value = 0;
 
@@ -33,15 +42,19 @@ void RecvMess(int sock) {
     n = 0;
     while ((buff[n++] = getchar()) != '\n')
       ;
+    // printf("Nhap vao buff : ");
+    // scanf("%s",buff);
     if ((strncmp(buff, "exit", 4)) == 0)
       break;
-   // if ((strncmp(buff, "getdata", 7)) == 0) 
+    char id_check[100];
+    for (int i = 0; i < strlen(buff); i++) {
+      id_check[i] = buff[i + 3];
+    }
+
     if (buff[0] == 'g' && buff[1] == 'e' && buff[2] == 't' &&
-        isdigit(buff[3]))
-    {
+        CheckStringIsNumber(id_check) == 1) {
 
       write(sock, buff, sizeof(buff));
-      // if ((strncmp(buff, "GetData", 7)) == 0)
       recv(sock, msg, sizeof(msg), 0);
       /*
       int SensorId, x1, x2, y1, y2;
@@ -56,7 +69,7 @@ void RecvMess(int sock) {
       printf(" Y1:%d ,", y1);
       printf(" Y2:%d)\n", y2);
       */
-     printf("%s",msg );
+      printf("%s", msg);
     }
   }
 }

@@ -8,11 +8,20 @@
 #include <time.h>
 #include <unistd.h>
 #define PORT 7473
-
-int sensors_list[3];
+int CheckStringIsNumber(char *a) {
+  int c = 1;
+  for (int i = 0; i < strlen(a - 1); i++) {
+    if (isdigit(a[i]) == 0) {
+      c = 0;
+      break;
+    }
+  }
+  return c;
+}
+int sensors_list[50];
 struct sockaddr_in serv_addr;
-pthread_t sensor[5];
-int check[5];
+pthread_t sensor[50];
+int check[50];
 int Sensor_id;
 char buff[100];
 struct SensorData {
@@ -45,13 +54,13 @@ void delay(int number_of_seconds) {
 void *SendCoords(void *arg) {
   int sock = *((int *)arg);
   struct SensorData coord1;
- 
+
   fprintf(XML_file, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
   coord1.SensorId = Sensor_id;
 
   int i = 0;
   while (1) {
-    
+
     delay(6000);
     coord1.x1 = rand() % 100 + 1;
     coord1.x2 = rand() % 100 + 1;
@@ -77,9 +86,9 @@ void *SendCoords(void *arg) {
 }
 
 int main(int argc, char const *argv[]) {
-   XML_file = fopen("Loc_Gen_XML.xml", "w");
+  XML_file = fopen("Loc_Gen_XML.xml", "w");
   int sock = 0, valread;
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 50; i++) {
     check[i] = 0;
   }
   char buffer[1024] = {0};
@@ -100,27 +109,34 @@ int main(int argc, char const *argv[]) {
     printf("\nConnection Failed \n");
     return -1;
   }
-
+  char id_check_add[100];
+  char id_check_close[100];
   int n;
   int i = 0;
   for (;;) {
     bzero(buff, sizeof(buff));
     read(sock, buff, sizeof(buff));
     printf("From VTS : %s", buff);
+    for (int i = 0; i < strlen(buff); i++) {
+      id_check_close[i] = buff[i + 5];
+    }
     if (buff[0] == 'c' && buff[1] == 'l' && buff[2] == 'o' && buff[3] == 's' &&
-        buff[4] == 'e' && isdigit(buff[5])) {
-      Sensor_id = buff[5] - '0';
+        buff[4] == 'e' && CheckStringIsNumber(id_check_close) == 1) {
+      Sensor_id = atoi(id_check_close);
       check[Sensor_id] = 0;
     }
+    for (int i = 0; i < strlen(buff); i++) {
+      id_check_add[i] = buff[i + 3];
+    }
+
     if (buff[0] == 'a' && buff[1] == 'd' && buff[2] == 'd' &&
-        isdigit(buff[3])) {
-      Sensor_id = buff[3] - '0';
+        CheckStringIsNumber(id_check_add) == 1) {
+      Sensor_id = atoi(id_check_add);
       check[Sensor_id] = 1;
     }
     if (check[Sensor_id] == 1)
-
       pthread_create(&sensor[Sensor_id], NULL, (void *)SendCoords, &sock);
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 50; i++) {
       if (check[i] == 0)
         pthread_cancel(sensor[i]);
     }

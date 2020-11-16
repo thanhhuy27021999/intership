@@ -14,34 +14,47 @@
 #include <unistd.h> //close
 #define MAX 1024
 pthread_mutex_t mutex;
-int clients_list[20];
+int clients_list[50];
 int n = 0;
-char msg[20][50000];
+char msg[50][50000];
 char tmp_msg[500];
 int len;
-FILE *XML_file, *wtrieLogSensor;
-
+FILE *XML_file;
+FILE *wtrieLogSensor;
+int CheckStringIsNumber(char *a) {
+  int c = 1;
+  for (int i = 0; i < strlen(a - 1); i++) {
+    if (isdigit(a[i]) == 0) {
+      c = 0;
+      break;
+    }
+  }
+  return c;
+}
 void *conectLocGen(void *sockarg) {
   int sockfd = *((int *)sockarg);
   char buff[100];
   int n;
-  wtrieLogSensor = fopen("WriteLog.xml", "w");
+  wtrieLogSensor = fopen("WriteLog.txt", "w");
   for (;;) {
     bzero(buff, 100);
     n = 0;
     while ((buff[n++] = getchar()) != '\n')
       ;
-    if (buff[0] == 'a' && buff[1] == 'd' && buff[2] == 'd' &&isdigit(buff[3])) 
-    {
-      time_t rawtime;
-      struct tm *timeinfo;
-      time(&rawtime);
-      timeinfo = localtime(&rawtime);
-       fprintf(wtrieLogSensor, "<Sensor%d>\n",  buff[3] - '0');
-     //  printf("check");
-      fprintf(wtrieLogSensor, "<TimeConnect>%s</TimeConnect>\n",asctime(timeinfo));
-      fprintf(wtrieLogSensor, "</Sensor%d>\n",  buff[3] - '0');
-    }
+    /*
+  if (buff[0] == 'a' && buff[1] == 'd' && buff[2] == 'd' &&isdigit(buff[3]))
+  {
+    time_t rawtime;
+    struct tm *timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+     fprintf(wtrieLogSensor, "<Sensor%d>\n",  buff[3] - '0');
+   //  printf("check");
+    fprintf(wtrieLogSensor,
+  "<TimeConnect>%s</TimeConnect>\n",asctime(timeinfo)); fprintf(wtrieLogSensor,
+  "</Sensor%d>\n",  buff[3] - '0');
+  }
+  */
     write(sockfd, buff, sizeof(buff));
     if (strncmp("exit", buff, 4) == 0) {
       printf("Exit...\n");
@@ -51,7 +64,6 @@ void *conectLocGen(void *sockarg) {
 }
 int DeserializeInt(char *buffer) {
   int value = 0;
-  
 
   value |= buffer[0] << 24;
   value |= buffer[1] << 16;
@@ -63,6 +75,7 @@ int DeserializeInt(char *buffer) {
 void *RecvMess(void *server_sock) {
   int sock = *((int *)server_sock);
   // XML_file = fopen("VTS_XML.xml", "w");
+  fprintf(XML_file, "<VTS__XML>\n");
   fprintf(XML_file, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
   int i = 0;
 
@@ -79,29 +92,29 @@ void *RecvMess(void *server_sock) {
     struct tm *timeinfo;
     time(&rawtime);
     timeinfo = localtime(&rawtime);
-    SensorId = DeserializeInt( tmp_msg);
-    x1 = DeserializeInt( tmp_msg+ 4);
-    x2 = DeserializeInt( tmp_msg + 8);
-    y1 = DeserializeInt( tmp_msg + 12);
-    y2 = DeserializeInt( tmp_msg + 16);
-    char id_tmp[10],X1[10],X2[10],Y1[10],Y2[10];
-   //itoa(SensorId,id,10);
-    sprintf(id_tmp, "%d", SensorId); 
-    sprintf(X1, "%d", x1); 
-    sprintf(X2, "%d", x2); 
-    sprintf(Y1, "%d", y1); 
-    sprintf(Y2, "%d", y2); 
-    strcat(msg[SensorId],"\nSensor ");
-    strcat(msg[SensorId],id_tmp);
-    strcat(msg[SensorId],"(X1: ");
-    strcat(msg[SensorId],X1);
-    strcat(msg[SensorId]," X2: ");
-    strcat(msg[SensorId],X2);
-    strcat(msg[SensorId]," Y1: ");
-    strcat(msg[SensorId],Y1);
-    strcat(msg[SensorId]," Y2 :");
-    strcat(msg[SensorId],Y2);
-    strcat(msg[SensorId],")\n");
+    SensorId = DeserializeInt(tmp_msg);
+    x1 = DeserializeInt(tmp_msg + 4);
+    x2 = DeserializeInt(tmp_msg + 8);
+    y1 = DeserializeInt(tmp_msg + 12);
+    y2 = DeserializeInt(tmp_msg + 16);
+    char id_tmp[10], X1[10], X2[10], Y1[10], Y2[10];
+    // itoa(SensorId,id,10);
+    sprintf(id_tmp, "%d", SensorId);
+    sprintf(X1, "%d", x1);
+    sprintf(X2, "%d", x2);
+    sprintf(Y1, "%d", y1);
+    sprintf(Y2, "%d", y2);
+    strcat(msg[SensorId], "\nSensor ");
+    strcat(msg[SensorId], id_tmp);
+    strcat(msg[SensorId], "(X1: ");
+    strcat(msg[SensorId], X1);
+    strcat(msg[SensorId], " X2: ");
+    strcat(msg[SensorId], X2);
+    strcat(msg[SensorId], " Y1: ");
+    strcat(msg[SensorId], Y1);
+    strcat(msg[SensorId], " Y2 :");
+    strcat(msg[SensorId], Y2);
+    strcat(msg[SensorId], ")\n");
     printf("Sensor %d  ", SensorId);
     printf("(X1:%d ,", x1);
     printf(" X2:%d ,", x2);
@@ -118,6 +131,7 @@ void *RecvMess(void *server_sock) {
     fprintf(XML_file, "</Sensor%d>\n", SensorId);
     ////////
   }
+  fprintf(XML_file, "<VTS XML>\n");
 }
 ////// Connect to CLI user
 
@@ -127,23 +141,27 @@ void *SendSensorData(void *arg) {
   char buffS[MAX];
   int n;
   int SensorIdMsg;
+  char id_check[100];
   for (;;) {
     bzero(buffC, sizeof(buffC));
     read(serverSocket, buffC, sizeof(buffC));
-    //if ((strncmp(buffC, "", 7)) == 0)
-     if (buffC[0] == 'g' && buffC[1] == 'e' && buffC[2] == 't' &&
-        isdigit(buffC[3])) 
-    {
-      SensorIdMsg=buffC[3] - '0';
+    // if ((strncmp(buffC, "", 7)) == 0)
+    for (int i = 0; i < strlen(buffC); i++) {
+      id_check[i] = buffC[i + 3];
+    }
+
+    if (buffC[0] == 'g' && buffC[1] == 'e' && buffC[2] == 't' &&
+        CheckStringIsNumber(id_check) == 1) {
+      SensorIdMsg = atoi(id_check);
       printf("Send message to CLI User\n");
-      send(serverSocket,  msg[SensorIdMsg], sizeof( msg[SensorIdMsg]), 0);
+      send(serverSocket, msg[SensorIdMsg], sizeof(msg[SensorIdMsg]), 0);
     }
   }
 }
 
 void *ConnectCLI(void *arg) {
-  int master_socket1, addrlen1, new_socket1, client_socket1[30];
-  int max_clients1 = 30, valread1, sd1;
+  int master_socket1, addrlen1, new_socket1, client_socket1[50];
+  int max_clients1 = 50, valread1, sd1;
   int max_sd1;
   struct sockaddr_in address1;
   struct timeval time_out;
@@ -197,7 +215,7 @@ void *ConnectCLI(void *arg) {
 
 int main() {
   XML_file = fopen("VTS_XML.xml", "w");
- // wtrieLogSensor = fopen("WriteLog.xml", "w");
+  // wtrieLogSensor = fopen("WriteLog.xml", "w");
   pthread_t recvt, connecLoc, connecCLIUser;
   pthread_create(&connecCLIUser, NULL, &ConnectCLI, NULL);
   struct sockaddr_in address;
