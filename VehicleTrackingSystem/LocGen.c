@@ -19,6 +19,7 @@ int CheckStringIsNumber(char *a) {
   return c;
 }
 int sensors_list[50];
+int same_senser_list[50];
 struct sockaddr_in serv_addr;
 pthread_t sensor[50];
 int check[50];
@@ -90,6 +91,7 @@ int main(int argc, char const *argv[]) {
   int sock = 0, valread;
   for (int i = 0; i < 50; i++) {
     check[i] = 0;
+    same_senser_list[i]=0;
   }
   char buffer[1024] = {0};
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -124,6 +126,7 @@ int main(int argc, char const *argv[]) {
         buff[4] == 'e' && CheckStringIsNumber(id_check_close) == 1) {
       Sensor_id = atoi(id_check_close);
       check[Sensor_id] = 0;
+      same_senser_list[Sensor_id]=0;
     }
     for (int i = 0; i < strlen(buff); i++) {
       id_check_add[i] = buff[i + 3];
@@ -133,9 +136,14 @@ int main(int argc, char const *argv[]) {
         CheckStringIsNumber(id_check_add) == 1) {
       Sensor_id = atoi(id_check_add);
       check[Sensor_id] = 1;
+       
     }
-    if (check[Sensor_id] == 1)
-      pthread_create(&sensor[Sensor_id], NULL, (void *)SendCoords, &sock);
+    if (check[Sensor_id] == 1 && same_senser_list[Sensor_id]==0)
+    {
+      same_senser_list[Sensor_id]=1;
+       pthread_create(&sensor[Sensor_id], NULL, (void *)SendCoords, &sock);
+    }
+     
     for (int i = 0; i < 50; i++) {
       if (check[i] == 0)
         pthread_cancel(sensor[i]);
