@@ -17,6 +17,7 @@
 #define MAX 1024
 pthread_mutex_t mutex;
 int clients_list[50];
+int SenSorOpen[50];
 int n = 0;
 char msg[50][50000];
 char tmp_msg[500];
@@ -36,27 +37,66 @@ int CheckStringIsNumber(char *a) {
 void *conectLocGen(void *sockarg) {
   int sockfd = *((int *)sockarg);
   char buff[100];
+  char idCheckOpen[10];
+  char idCheckClose[10];
   int n;
-  wtrieLogSensor = fopen("WriteLog.txt", "w");
+  for(int i=0;i<50;i++)
+  {
+      SenSorOpen[i]=0;
+  }
+ // wtrieLogSensor = fopen("WriteLog.txt", "w");
+    TiXmlDocument doc;
+ TiXmlDeclaration *dec=new TiXmlDeclaration("1.0","utf-8","");
+ doc.LinkEndChild(dec);
+ TiXmlElement* root= new TiXmlElement("WriteLog");
+ doc.LinkEndChild(root);
   for (;;) {
     bzero(buff, 100);
     n = 0;
     while ((buff[n++] = getchar()) != '\n')
       ;
-    /*
-  if (buff[0] == 'a' && buff[1] == 'd' && buff[2] == 'd' &&isdigit(buff[3]))
+    for (int i = 0; i < strlen(buff); i++) {
+      idCheckOpen[i] = buff[i + 3];
+    }
+ if (buff[0] == 'a' && buff[1] == 'd' && buff[2] == 'd' &&
+        CheckStringIsNumber(idCheckOpen) == 1) 
   {
+   
+    SenSorOpen[atoi(idCheckOpen)]=1;
     time_t rawtime;
     struct tm *timeinfo;
     time(&rawtime);
     timeinfo = localtime(&rawtime);
-     fprintf(wtrieLogSensor, "<Sensor%d>\n",  buff[3] - '0');
-   //  printf("check");
-    fprintf(wtrieLogSensor,
-  "<TimeConnect>%s</TimeConnect>\n",asctime(timeinfo)); fprintf(wtrieLogSensor,
-  "</Sensor%d>\n",  buff[3] - '0');
+     TiXmlElement* Sensor = new TiXmlElement("Sensor");
+    Sensor->SetAttribute("id",idCheckOpen);
+    root->LinkEndChild(Sensor);
+     TiXmlElement* time_xml = new TiXmlElement("TimeOpen");
+    Sensor->LinkEndChild(time_xml);
+    TiXmlText* time_xml_content = new TiXmlText(asctime(timeinfo));
+    time_xml->LinkEndChild(time_xml_content);
+     doc.SaveFile("WriteLog.xml");
+    
   }
-  */
+   for (int i = 0; i < strlen(buff); i++) {
+      idCheckClose[i] = buff[i + 5];
+    }
+ if (buff[0] == 'c' && buff[1] == 'l' && buff[2] == 'o' && buff[3] == 's' &&
+        buff[4] == 'e' && CheckStringIsNumber(idCheckClose) == 1 && SenSorOpen[atoi(idCheckClose)]==1) 
+  {
+    SenSorOpen[atoi(idCheckClose)]=0;
+    time_t rawtime;
+    struct tm *timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+     TiXmlElement* Sensor = new TiXmlElement("Sensor");
+    Sensor->SetAttribute("id",idCheckClose);
+    root->LinkEndChild(Sensor);
+     TiXmlElement* time_xml = new TiXmlElement("TimeClose");
+    Sensor->LinkEndChild(time_xml);
+    TiXmlText* time_xml_content = new TiXmlText(asctime(timeinfo));
+    time_xml->LinkEndChild(time_xml_content);
+    doc.SaveFile("WriteLog.xml");
+  }
     write(sockfd, buff, sizeof(buff));
     if (strncmp("exit", buff, 4) == 0) {
       printf("Exit...\n");
@@ -254,7 +294,7 @@ void *ConnectCLI(void *arg) {
 
 int main() {
 
- 
+  
   pthread_t recvt, connecLoc, connecCLIUser;
   pthread_create(&connecCLIUser, NULL, &ConnectCLI, NULL);
   struct sockaddr_in address;
