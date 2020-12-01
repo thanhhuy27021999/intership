@@ -5,21 +5,31 @@
 #include <unistd.h> 
 #include <string.h> 
 #include<pthread.h> 
+#include "define.hpp"
 #define MAX 100
 #define PORT 12345
 using namespace std;
 char CHECK[MAX];
+int flag;
 
 void *mythread (void *arg)
 {
     int newarg = *(int*)(arg);
-    char buff[MAX];                                                                                                                                                                                                                                                      
-    while(strncmp(CHECK,"exit",4)!=0)
+    DataSenSor buff;                                                                                                                                                                                                                                                      
+    while(strncmp(CHECK,"exit",sizeof("exit")-1)!=0)
     {
-        bzero(buff,sizeof(buff));
-        read(newarg,buff, sizeof(buff));
-        cout<<buff;
+        bzero(&buff,sizeof(buff));
+        read(newarg,&buff, sizeof(buff));
+        if(flag)
+        {
+            cout << buff.Name <<"        "<<buff.ID<<"\n";
+        }
+        else
+        {
+            Xuat(&buff);
+        }
     }
+    cout <<"Da exit Client"<<"\n";
 }                                                
 void func(int sockfd) 
 { 
@@ -30,23 +40,36 @@ void func(int sockfd)
 		//printf("Me: "); 
 		n = 0; 
 		while ((buff[n++] = getchar()) != '\n'); 
+        if(!strncmp(buff,"GetSenSor",sizeof("GetSenSor")-1))
+        {
+            flag = 1;
+            cout<<"Name         ID \n";
+        }  
+        else
+        {
+            flag = 0;
+        }
 		write(sockfd, buff, sizeof(buff)); 
         if ((strncmp(buff, "exit", 4)) == 0) { 
             strcpy(CHECK,buff);
-			printf("Client Exit...\n"); 
+            //cout << buff<<"\n";
+            cout <<CHECK <<"\n";
+			//printf("Client Exit...\n"); 
 			break; 
-		}  
+		}
+
+        
 	} 
 } 
 int main()
 {
-    pthread_t pth;
+    pthread_t pth; // recieve from VTS
     int sock = 0; //creat a socket
     sockaddr_in serv_addr; // creat server_addr
     memset(&serv_addr,0,sizeof(serv_addr));
     sock = socket(AF_INET,SOCK_STREAM, 0);
     // bind the add to socket
-    if(inet_pton(AF_INET, "192.168.1.6", &serv_addr.sin_addr)<=0)  
+    if(inet_pton(AF_INET, "192.168.122.1", &serv_addr.sin_addr)<=0)  
     { 
         cout<<"\nInvalid address/ Address not supported \n"; 
         return -1; 

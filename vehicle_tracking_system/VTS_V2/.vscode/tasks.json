@@ -2,7 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "cppbuild",
+			"type": "shell",
 			"label": "C/C++: g++ build active file",
 			"command": "/usr/bin/g++",
 			"args": [
@@ -13,7 +13,7 @@
 				"-lpthread"
 			],
 			"options": {
-				"cwd": "/usr/bin"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$gcc"
@@ -21,8 +21,7 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			},
-			"detail": "compiler: /usr/bin/g++"
+			}
 		}
 	]
 }

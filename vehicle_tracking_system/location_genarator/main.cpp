@@ -7,7 +7,7 @@
 #include "Define_loca.h"
 #include <pthread.h>
 using namespace std;
-
+DataStruct sensor[30];
 int main()
 {
     pthread_t Thread[2];
