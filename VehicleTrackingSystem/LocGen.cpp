@@ -9,43 +9,27 @@
 #include <unistd.h>
 #include "tinyxml.h"
 #define PORT 7473
-int CheckStringIsNumber(char *a) {
-  int c = 1;
-  for (int i = 0; i < strlen(a - 1); i++) {
-    if (isdigit(a[i]) == 0) {
-      c = 0;
-      break;
-    }
-  }
-  return c;
-}
+
 int sensors_list[50];
 int same_senser_list[50];
 struct sockaddr_in serv_addr;
 pthread_t sensor[50];
 int check[50];
 int Sensor_id;
-char buff[100];
+char buff[1000];
+struct NameID
+{
+    char Name[100];
+    int  id;
+    int Open;
+};
+struct NameID Listname[50];
 struct SensorData {
+  char Name[100];
   int SensorId, x1, x2, y1, y2;
 };
 FILE *XML_file;
-unsigned char *SerializeInt(unsigned char *buffer, int value) {
 
-  buffer[0] = value >> 24;
-  buffer[1] = value >> 16;
-  buffer[2] = value >> 8;
-  buffer[3] = value;
-  return buffer + 4;
-}
-unsigned char *SerializeCoord(unsigned char *buffer, struct SensorData value) {
-  buffer = SerializeInt(buffer, value.SensorId);
-  buffer = SerializeInt(buffer, value.x1);
-  buffer = SerializeInt(buffer, value.x2);
-  buffer = SerializeInt(buffer, value.y1);
-  buffer = SerializeInt(buffer, value.y2);
-  return buffer;
-}
 void delay(int number_of_seconds) {
 
   int milli_seconds = 1000 * number_of_seconds;
@@ -53,6 +37,8 @@ void delay(int number_of_seconds) {
   while (clock() < start_time + milli_seconds)
     ;
 }
+
+
 void *SendCoords(void *arg) {
   int sock = *((int *)arg);
   struct SensorData coord1;
@@ -63,11 +49,12 @@ void *SendCoords(void *arg) {
  TiXmlElement* root= new TiXmlElement("LocGenXML");
  doc.LinkEndChild(root);
   coord1.SensorId = Sensor_id;
-
+  strcpy(coord1.Name,Listname[Sensor_id].Name);
   int i = 0;
   while (1) {
 
     delay(6000);
+   
     coord1.x1 = rand() % 100 + 1;
     coord1.x2 = rand() % 100 + 1;
     coord1.y1 = rand() % 100 + 1;
@@ -77,7 +64,7 @@ void *SendCoords(void *arg) {
     time(&rawtime);
     timeinfo = localtime(&rawtime);
     TiXmlElement* Sensor = new TiXmlElement("Sensor");
-    Sensor->SetAttribute("id",coord1.SensorId );
+    Sensor->SetAttribute("Name",coord1.Name );
     root->LinkEndChild(Sensor);
 
     TiXmlElement* Location = new TiXmlElement("Location");
@@ -113,9 +100,12 @@ void *SendCoords(void *arg) {
     TiXmlText* y2_xml_content = new TiXmlText(buf);
     y2_xml->LinkEndChild(y2_xml_content);
      doc.SaveFile("LocGenXml.xml");
-    unsigned char buffCoord[32], *ptr;
-    ptr = SerializeCoord(buffCoord, coord1);
-    send(sock, buffCoord, ptr - buffCoord, 0);
+  //  unsigned char buffCoord[32], *ptr;
+  //  ptr = SerializeCoord(buffCoord, coord1);
+  //  send(sock, buffCoord, ptr - buffCoord, 0);
+   // char * namestring="TranNgocSon";
+   // send(sock, namestring, sizeof(namestring), 0);
+    send(sock,&coord1 ,sizeof(coord1) , 0);
   }
 }
 
@@ -125,7 +115,10 @@ int main(int argc, char const *argv[]) {
   for (int i = 0; i < 50; i++) {
     check[i] = 0;
     same_senser_list[i]=0;
+   strcpy(Listname[i].Name,""); 
+    Listname[i].Open=0;
   }
+
   char buffer[1024] = {0};
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     printf("\n Socket creation error \n");
@@ -146,35 +139,87 @@ int main(int argc, char const *argv[]) {
   }
   char id_check_add[100];
   char id_check_close[100];
+  char SSNameOpen[100];
+  char SSNameClose[100];
   int n;
   int i = 0;
+  int checkName=0;
   for (;;) {
+    
+
     bzero(buff, sizeof(buff));
     read(sock, buff, sizeof(buff));
     printf("From VTS : %s", buff);
-    for (int i = 0; i < strlen(buff); i++) {
-      id_check_close[i] = buff[i + 5];
-    }
+    
+    // if (buff[0] == 'c' && buff[1] == 'l' && buff[2] == 'o' && buff[3] == 's' &&
+    //     buff[4] == 'e' && CheckStringIsNumber(id_check_close) == 1) 
     if (buff[0] == 'c' && buff[1] == 'l' && buff[2] == 'o' && buff[3] == 's' &&
-        buff[4] == 'e' && CheckStringIsNumber(id_check_close) == 1) {
-      Sensor_id = atoi(id_check_close);
-      check[Sensor_id] = 0;
-      same_senser_list[Sensor_id]=0;
+        buff[4] == 'e' &&  buff[5] == ':') 
+    {
+      for (int i = 0; i < strlen(buff); i++) 
+      {
+        SSNameClose[i] = buff[i + 6];
+      }
+     // printf("closename: %s ",SSNameClose);
+      for(int i=0;i<50;i++)
+      {
+        if(strcmp(SSNameClose,Listname[i].Name)==0)
+        {
+        //   printf("ListName: %s ",Listname[i].Name);
+          check[i]=0;
+          strcpy(Listname[i].Name,"");
+           Listname[i].Open=0;
+          break;
+        }
+      }
+     // Sensor_id = atoi(id_check_close);
+     // check[Sensor_id] = 0;
+     // same_senser_list[Sensor_id]=0;
     }
     for (int i = 0; i < strlen(buff); i++) {
       id_check_add[i] = buff[i + 3];
     }
-
-    if (buff[0] == 'a' && buff[1] == 'd' && buff[2] == 'd' &&
-        CheckStringIsNumber(id_check_add) == 1) {
-      Sensor_id = atoi(id_check_add);
+   
+   
+    // if (buff[0] == 'a' && buff[1] == 'd' && buff[2] == 'd' &&
+    //     CheckStringIsNumber(id_check_add) == 1) 
+    if (buff[0] == 'a' && buff[1] == 'd' && buff[2] == 'd' &&buff[3]==':') 
+   {
+     int index;
+     for (int i = 0; i < strlen(buff); i++)
+   {
+      SSNameOpen[i] = buff[i + 4];
+    }
+    for(int i=0;i<50;i++)
+    {
+      if(check[i]==0)
+      {
+        for(int j=0;j<50;j++)
+        {
+          if(strcmp(SSNameOpen,Listname[j].Name)==0)
+          {
+            checkName=1;
+            break;
+          }
+        }
+        if(checkName==0)
+        {
+          strcpy(Listname[i].Name,SSNameOpen);
+        index=i;
+        break;
+        }
+       
+      }
+    }
+      Sensor_id = index;
       check[Sensor_id] = 1;
        
     }
-    if (check[Sensor_id] == 1 && same_senser_list[Sensor_id]==0)
+    
+   
+    if (check[Sensor_id] == 1 &&Listname[Sensor_id].Open==0)
     {
-      same_senser_list[Sensor_id]=1;
-      // pthread_create(&sensor[Sensor_id], NULL, (void *)SendCoords, &sock);
+      Listname[Sensor_id].Open=1;
       pthread_create(&sensor[Sensor_id], NULL, SendCoords, &sock);
     }
      

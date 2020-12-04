@@ -51,26 +51,19 @@ void RecvMess(int sock) {
       id_check[i] = buff[i + 3];
     }
 
-    if (buff[0] == 'g' && buff[1] == 'e' && buff[2] == 't' &&
-        CheckStringIsNumber(id_check) == 1) {
+    if (buff[0] == 'g' && buff[1] == 'e' && buff[2] == 't' &&buff[3] == ':') 
+    {
 
       write(sock, buff, sizeof(buff));
       recv(sock, msg, sizeof(msg), 0);
-      /*
-      int SensorId, x1, x2, y1, y2;
-      SensorId = DeserializeInt(msg);
-      x1 = DeserializeInt(msg + 4);
-      x2 = DeserializeInt(msg + 8);
-      y1 = DeserializeInt(msg + 12);
-      y2 = DeserializeInt(msg + 16);
-      printf("Sensor %d  ", SensorId);
-      printf("(X1:%d ,", x1);
-      printf(" X2:%d ,", x2);
-      printf(" Y1:%d ,", y1);
-      printf(" Y2:%d)\n", y2);
-      */
       printf("%s", msg);
     }
+     if (buff[0] == 'l' && buff[1] == 'i' && buff[2] == 's' && buff[3] == 't' )
+   {
+     write(sock, buff, sizeof(buff));
+     recv(sock, msg, sizeof(msg), 0);
+     printf("%s", msg);
+   }
   }
 }
 
