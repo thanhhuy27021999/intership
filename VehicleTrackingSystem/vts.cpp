@@ -24,6 +24,7 @@ char msg[50][50000];
 int len;
 FILE *XML_file;
 FILE *wtrieLogSensor;
+char CheckNameCLI[50][100];
 char list_sensor_open[500];
 struct SensorData
 {
@@ -33,7 +34,7 @@ struct SensorData
 struct NameID
 {
   char Name[100];
-  int ID, Open;
+  int ID, Open,sameName;
 };
 struct NameID ListnameID[50];
 struct SensorData messStruct;
@@ -41,6 +42,7 @@ void *conectLocGen(void *sockarg)
 {
   int sockfd = *((int *)sockarg);
   char buff[100];
+  char buffTmp[100];
   char idCheckOpen[10];
   char idCheckClose[10];
   int n;
@@ -60,6 +62,7 @@ void *conectLocGen(void *sockarg)
     n = 0;
     while ((buff[n++] = getchar()) != '\n')
       ;
+    strcpy(buffTmp,buff);
     for (int i = 0; i < strlen(buff); i++)
     {
       idCheckOpen[i] = buff[i + 4];
@@ -72,6 +75,7 @@ void *conectLocGen(void *sockarg)
         {
           strcpy(ListnameID[i].Name, idCheckOpen);
           ListnameID[i].Open = 1;
+         // ListnameID[i].sameName=1;
           break;
         }
       }
@@ -120,6 +124,7 @@ void *conectLocGen(void *sockarg)
       time_xml->LinkEndChild(time_xml_content);
       doc.SaveFile("WriteLog.xml");
     }
+    strcpy(buff,buffTmp);
     write(sockfd, buff, sizeof(buff));
     if (strncmp("exit", buff, 4) == 0)
     {
@@ -262,24 +267,47 @@ void *SendSensorData(void *arg)
         }
       }
     }
-
+    int checkName=0;
     if (buffC[0] == 'l' && buffC[1] == 'i' && buffC[2] == 's' && buffC[3] == 't')
     {
 
       printf("Send list Sensor to CLI User\n");
       strcpy(list_sensor_open, "");
       char tmp[5];
+      /*
       for (int i = 0; i < 50; i++)
       {
         if (ListnameID[i].Open == 1)
         {
+         // ListnameID[i].sameName=1;
+          for(int j=0;j<50;j++)
+          {
+            if(strcmp(CheckNameCLI[j],ListnameID[i].Name)==0)
+            {
+              checkName=1;
+              break;
+            }
+          }
+          if(checkName==0)
+          {
           sprintf(tmp, "%d", ListnameID[i].ID);
           strcat(list_sensor_open, "Sensor: ");
           strcat(list_sensor_open, ListnameID[i].Name);
-           strcat(list_sensor_open, "(ID: ");
-           strcat(list_sensor_open, tmp);
-          strcat(list_sensor_open, ")");
-          strcpy(tmp, "");
+          strcpy(CheckNameCLI[i], ListnameID[i].Name);
+          }
+         
+       
+        }
+      }
+      */
+     for (int i = 0; i < 50; i++)
+      {
+        if (ListnameID[i].Open == 1)
+        {
+         sprintf(tmp, "%d", ListnameID[i].ID);
+          strcat(list_sensor_open, "Sensor: ");
+          strcat(list_sensor_open, ListnameID[i].Name);
+          strcpy(CheckNameCLI[i], ListnameID[i].Name);
           
         }
       }
@@ -385,6 +413,8 @@ int main()
   {
     strcpy(ListnameID[i].Name, "");
     ListnameID[i].Open = 0;
+    ListnameID[i].sameName=0;
+    strcpy(CheckNameCLI[i],"");
   }
   pthread_t recvt, connecLoc, connecCLIUser;
   pthread_create(&connecCLIUser, NULL, &ConnectCLI, NULL);

@@ -21,7 +21,7 @@ struct NameID
 {
     char Name[100];
     int  id;
-    int Open;
+    int Open,sameName;
 };
 struct NameID Listname[50];
 struct SensorData {
