@@ -53,7 +53,7 @@ void *SendCoords(void *arg) {
   int i = 0;
   while (1) {
 
-    delay(6000);
+    delay(10000);
    
     coord1.x1 = rand() % 100 + 1;
     coord1.x2 = rand() % 100 + 1;
