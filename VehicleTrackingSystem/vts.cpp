@@ -96,7 +96,7 @@ void *conectLocGen(void *sockarg)
     }
     for (int i = 0; i < strlen(buff); i++)
     {
-      idCheckClose[i] = buff[i + 5];
+      idCheckClose[i] = buff[i + 6];
     }
     if (buff[0] == 'c' && buff[1] == 'l' && buff[2] == 'o' && buff[3] == 's' &&
         buff[4] == 'e' && buff[5] == ':')
@@ -219,7 +219,7 @@ void *RecvMess(void *server_sock)
     strcat(msg[SensorId], SSname);
     strcat(msg[SensorId], "(id: ");
     strcat(msg[SensorId], id_tmp);
-    strcat(msg[SensorId], "X1: ");
+    strcat(msg[SensorId], " X1: ");
     strcat(msg[SensorId], X1);
     strcat(msg[SensorId], " X2: ");
     strcat(msg[SensorId], X2);
@@ -300,16 +300,44 @@ void *SendSensorData(void *arg)
         }
       }
       */
+     char tmpNameCLI[50][100];
+      for (int i = 0; i < 50; i++)
+      {
+        strcpy(tmpNameCLI[i],"");
+      }
      for (int i = 0; i < 50; i++)
       {
-        if (ListnameID[i].Open == 1)
-        {
-         sprintf(tmp, "%d", ListnameID[i].ID);
+         if (ListnameID[i].Open == 1)
+         {
+        //   int cc=0;
+        //   for(i=0;i<50;i++)
+        //   {
+        //     if(strcmp(ListnameID[i].Name,"")==0)
+        //     cc=1;
+        //   }
+        //   if(cc==0)
+        //   {
+          char *p;
+         p=strstr(list_sensor_open,ListnameID[i].Name);
+          if(p)
+          {
+
+          }
+          else
+          {
+            /* code */
+              sprintf(tmp, "%d", ListnameID[i].ID);
           strcat(list_sensor_open, "Sensor: ");
           strcat(list_sensor_open, ListnameID[i].Name);
           strcpy(CheckNameCLI[i], ListnameID[i].Name);
+          strcpy(tmpNameCLI[i],ListnameID[i].Name);
+          }
           
-        }
+        
+         }
+         
+          
+      //  }
       }
       strcat(list_sensor_open, "\n");
       int listEmpty = 0;
